@@ -167,7 +167,7 @@
 
     .game-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+      grid-template-columns: minmax(0, 1.42fr) minmax(340px, 0.98fr);
       gap: 16px;
       align-items: start;
     }
@@ -195,8 +195,8 @@
     }
 
     .tile {
-      position: relative; aspect-ratio: 1 / 1; min-width: 44px;
-      background: #0e1726; border: 1px solid #1e2d45; border-radius: 7px;
+      position: relative; aspect-ratio: 1 / 1; min-width: 48px;
+      background: #0e1726; border: 1px solid #1e2d45; border-radius: 8px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       cursor: pointer; transition: background .12s, border-color .12s, transform .08s; padding: 2px;
     }
@@ -207,33 +207,77 @@
     .tile.can-shoot { background: rgba(239, 68, 68, 0.22); border-color: #ef4444; box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.35); }
     .tile.selected { outline: 2px solid #facc15; outline-offset: -2px; z-index: 2; }
     .tile.is-me { box-shadow: inset 0 0 0 2px #38bdf8; }
-    .tile.has-bounty { border-color: rgba(245, 158, 11, 0.75); }
+    .tile.has-bounty { border-color: rgba(245, 158, 11, 0.78); }
 
-    .tank-token {
-      width: 72%; height: 54%; min-height: 20px; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 0.76rem; color: #fff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.75);
-      border: 1px solid rgba(255,255,255,0.28); position: relative;
+    .tank-sprite-wrap {
+      position: relative;
+      width: 34px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.65));
     }
-    .tank-token.dead { opacity: 0.45; filter: grayscale(0.8); border-style: dashed; }
-    .tank-hearts { font-size: 0.66rem; font-weight: 700; margin-top: 2px; color: #fda4af; line-height: 1; white-space: nowrap; }
-    .haunt-pip { position: absolute; top: -5px; right: -5px; font-size: 0.7rem; filter: drop-shadow(0 1px 2px #000); }
+    .tank-sprite-wrap.dead {
+      opacity: 0.65;
+    }
+    .tank-sprite-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .tank-initials {
+      position: absolute;
+      top: 54%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.56rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.75);
+      pointer-events: none;
+      letter-spacing: -0.2px;
+      line-height: 1;
+    }
+    .tank-hearts {
+      font-size: 0.64rem;
+      font-weight: 700;
+      margin-top: 1px;
+      color: #fda4af;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .haunt-pip {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      font-size: 0.68rem;
+      filter: drop-shadow(0 1px 2px #000);
+    }
     .bounty-pip {
-      position: absolute; top: -6px; left: -6px;
-      background: #b45309; border: 1px solid #f59e0b; color: #fff;
-      border-radius: 999px; padding: 0 4px; font-size: 0.6rem; font-weight: 800; line-height: 1.3;
+      position: absolute;
+      top: -6px;
+      left: -7px;
+      background: #b45309;
+      border: 1px solid #f59e0b;
+      color: #fff;
+      border-radius: 999px;
+      padding: 0 4px;
+      font-size: 0.56rem;
+      font-weight: 800;
+      line-height: 1.25;
+      z-index: 2;
     }
     .heart-drop { font-size: 1.25rem; animation: pulse 1.6s infinite ease-in-out; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
 
     .tabs {
-      display: flex; gap: 6px; border-bottom: 1px solid var(--border);
+      display: flex; gap: 5px; border-bottom: 1px solid var(--border);
       padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap;
     }
     .tab-btn {
-      padding: 7px 12px; border-radius: 8px; border: 1px solid transparent;
-      background: transparent; color: var(--muted); font-weight: 700; font-size: 0.85rem; cursor: pointer;
+      padding: 7px 11px; border-radius: 8px; border: 1px solid transparent;
+      background: transparent; color: var(--muted); font-weight: 700; font-size: 0.84rem; cursor: pointer;
     }
     .tab-btn.active { background: var(--panel-2); border-color: var(--border); color: var(--text); }
 
@@ -242,6 +286,23 @@
       border-radius: 10px; padding: 12px; margin-bottom: 12px;
     }
     .action-panel h3 { font-size: 0.95rem; margin-bottom: 8px; }
+    .cmd-block {
+      background: #0e1624;
+      border: 1px solid #1f2e47;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 9px;
+    }
+    .cmd-block:last-child { margin-bottom: 0; }
+    .cmd-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     .muted { color: var(--muted); font-size: 0.85rem; }
 
     .player-item {
@@ -453,12 +514,14 @@
           <div id="contextPanel"></div>
 
           <div class="tabs">
+            <button id="cmdTabBtn" class="tab-btn hidden" data-tab="commands" onclick="switchTab('commands')">⚡ Comandi</button>
             <button class="tab-btn active" data-tab="players" onclick="switchTab('players')">👥 Carri</button>
             <button class="tab-btn" data-tab="logs" onclick="switchTab('logs')">📜 Bollettino</button>
             <button id="gmTabBtn" class="tab-btn hidden" data-tab="gm" onclick="switchTab('gm')">👑 Game Master</button>
             <button class="tab-btn" data-tab="rules" onclick="switchTab('rules')">📖 Regole</button>
           </div>
 
+          <div id="tab-commands" class="hidden"></div>
           <div id="tab-players"></div>
           <div id="tab-logs" class="hidden"></div>
           <div id="tab-gm" class="hidden"></div>
@@ -530,7 +593,7 @@
     let lastAutoRefreshForTs = null;
 
     // =========================================================================
-    // UTILITY
+    // UTILITY & SPRITE CARRI ARMATI
     // =========================================================================
     function esc(str) {
       return String(str ?? "")
@@ -552,6 +615,45 @@
       const parts = String(name || "?").trim().split(/\s+/);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    function renderTankSprite(player, isDead = false) {
+      const baseColor = esc(player.color || "#3b82f6");
+      if (isDead) {
+        return `
+          <svg class="tank-sprite-svg" viewBox="0 0 48 40" aria-hidden="true">
+            <rect x="4" y="5" width="40" height="7" rx="2.5" fill="#272e3a" stroke="#475569" stroke-width="1.5"/>
+            <rect x="4" y="28" width="40" height="7" rx="2.5" fill="#272e3a" stroke="#475569" stroke-width="1.5"/>
+            <rect x="9" y="10" width="30" height="20" rx="4" fill="#374151" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M14 13 L23 20 L18 27" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="26" cy="20" r="7.5" fill="#1f2937" stroke="#4b5563" stroke-width="1.5"/>
+            <line x1="33" y1="20" x2="43" y2="23" stroke="#4b5563" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        `;
+      }
+      return `
+        <svg class="tank-sprite-svg" viewBox="0 0 48 40" aria-hidden="true">
+          <!-- Cingoli -->
+          <rect x="4" y="4" width="40" height="7.5" rx="2.5" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+          <rect x="4" y="28.5" width="40" height="7.5" rx="2.5" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+          <!-- Tacchette cingoli -->
+          <line x1="11" y1="4.5" x2="11" y2="11" stroke="#475569" stroke-width="1.4"/>
+          <line x1="19" y1="4.5" x2="19" y2="11" stroke="#475569" stroke-width="1.4"/>
+          <line x1="27" y1="4.5" x2="27" y2="11" stroke="#475569" stroke-width="1.4"/>
+          <line x1="35" y1="4.5" x2="35" y2="11" stroke="#475569" stroke-width="1.4"/>
+          <line x1="11" y1="29" x2="11" y2="35.5" stroke="#475569" stroke-width="1.4"/>
+          <line x1="19" y1="29" x2="19" y2="35.5" stroke="#475569" stroke-width="1.4"/>
+          <line x1="27" y1="29" x2="27" y2="35.5" stroke="#475569" stroke-width="1.4"/>
+          <line x1="35" y1="29" x2="35" y2="35.5" stroke="#475569" stroke-width="1.4"/>
+          <!-- Scafo -->
+          <rect x="8.5" y="9.5" width="29" height="21" rx="4.5" fill="${baseColor}" stroke="rgba(255,255,255,0.45)" stroke-width="1.3"/>
+          <!-- Cannone -->
+          <rect x="27" y="17.5" width="17.5" height="5" rx="1.8" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+          <rect x="41.5" y="16.5" width="3.5" height="7" rx="1" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
+          <!-- Torretta -->
+          <circle cx="24" cy="20" r="8.2" fill="${baseColor}" stroke="rgba(255,255,255,0.65)" stroke-width="1.4"/>
+        </svg>
+      `;
     }
 
     function isValidDiscordId(val) {
@@ -836,12 +938,17 @@
       state.logs = logsRes.data || [];
       state.secret = (secretRes && secretRes.data) ? secretRes.data : { role: "spectator" };
 
+      if (!window.__initialTabSet) {
+        window.__initialTabSet = true;
+        if (state.secret.role === "gm" && state.game.day === 0) {
+          state.activeTab = "gm";
+        } else if (state.secret.role === "player" && state.game.status === "active") {
+          state.activeTab = "commands";
+        }
+      }
+
       if (state.secret.role === "gm") {
         saveRecentGame({ gameId, token, name: state.game.name, roleLabel: "👑 Game Master" });
-        if (state.activeTab === "players" && state.game.day === 0 && !window.__gmOpenedOnce) {
-          window.__gmOpenedOnce = true;
-          state.activeTab = "gm";
-        }
       } else if (state.secret.role === "player") {
         const me = getMe();
         if (me) saveRecentGame({ gameId, token, name: state.game.name, roleLabel: "🚜 " + me.name });
@@ -875,6 +982,7 @@
       renderModeToolbar();
       renderBoard();
       renderContextPanel();
+      renderCommandsTab();
       renderPlayersTab();
       renderLogsTab();
       renderGmTab();
@@ -908,13 +1016,16 @@
 
       const roleBadge = document.getElementById("roleBadge");
       const gmTabBtn = document.getElementById("gmTabBtn");
+      const cmdTabBtn = document.getElementById("cmdTabBtn");
 
       if (state.secret.role === "gm") {
         roleBadge.className = "badge badge-gm";
         roleBadge.textContent = "👑 Game Master";
         gmTabBtn.classList.remove("hidden");
+        cmdTabBtn.classList.add("hidden");
       } else if (state.secret.role === "player") {
         gmTabBtn.classList.add("hidden");
+        cmdTabBtn.classList.remove("hidden");
         const me = getMe();
         if (me && me.hearts > 0) {
           roleBadge.className = "badge badge-ap";
@@ -925,6 +1036,7 @@
         }
       } else {
         gmTabBtn.classList.add("hidden");
+        cmdTabBtn.classList.add("hidden");
         roleBadge.className = "badge";
         roleBadge.textContent = "👁️ Spettatore";
       }
@@ -970,7 +1082,7 @@
       `;
 
       const hints = {
-        inspect: "Clicca un carro armato sulla mappa per vedere distanza, raggio, taglie e opzioni.",
+        inspect: "Clicca un carro armato sulla mappa oppure apri la tab ⚡ Comandi per avere tutte le azioni raccolte.",
         move: "Clicca una delle caselle verdi adiacenti (distanza Manhattan = 1) per spostarti.",
         shoot: "Clicca un nemico evidenziato in rosso nel tuo raggio Manhattan per sparargli (-1 ❤️).",
         gift: "Clicca un alleato nel tuo raggio per inviare risorse, oppure un bersaglio qualsiasi per piazzare una taglia anonima."
@@ -999,7 +1111,7 @@
       state.players.forEach(p => playerMap.set(`${p.x},${p.y}`, p));
       const heartSet = new Set(state.hearts.map(h => `${h.x},${h.y}`));
 
-      const colSize = g.width >= 14 ? "42px" : "minmax(46px, 1fr)";
+      const colSize = g.width >= 14 ? "44px" : "minmax(50px, 1fr)";
       grid.style.gridTemplateColumns = `26px repeat(${g.width}, ${colSize})`;
 
       let html = `<div class="coord-cell"></div>`;
@@ -1034,12 +1146,13 @@
             const isHaunted = g.haunted_player_id === p.id;
             const bounty = p.bounty_ap || 0;
             inner = `
-              <div class="tank-token ${isDead ? "dead" : ""}" style="background:${esc(p.color)};" title="${esc(p.name)} (${coordLabel(x, y)})">
-                ${isDead ? "💀" : esc(initials(p.name))}
+              <div class="tank-sprite-wrap ${isDead ? "dead" : ""}" title="${esc(p.name)} (${coordLabel(x, y)})">
                 ${!isDead && bounty > 0 ? `<span class="bounty-pip" title="Taglia attiva: +${bounty} AP">🎯${bounty}</span>` : ""}
                 ${isHaunted ? '<span class="haunt-pip" title="Maledetto oggi">👻</span>' : ""}
+                ${renderTankSprite(p, isDead)}
+                ${!isDead ? `<span class="tank-initials">${esc(initials(p.name))}</span>` : ""}
               </div>
-              <div class="tank-hearts">${isDead ? "RELITTO" : "❤️" + p.hearts}</div>
+              <div class="tank-hearts">${isDead ? "💀 RELITTO" : "❤️" + p.hearts}</div>
             `;
           } else if (hasHeart) {
             inner = `<div class="heart-drop" title="Cuore raccoglibile (+1 ❤️)">❤️</div>`;
@@ -1078,27 +1191,146 @@
       renderContextPanel();
     }
 
+    function renderCommandsTab() {
+      const box = document.getElementById("tab-commands");
+      const me = getMe();
+      if (!me || state.secret.role !== "player") {
+        box.innerHTML = "";
+        return;
+      }
+
+      if (state.game.status !== "active") {
+        box.innerHTML = `<p class="muted">La partita è conclusa: non sono più disponibili comandi attivi.</p>`;
+        return;
+      }
+
+      if (me.hearts === 0) {
+        box.innerHTML = `
+          <div class="action-panel" style="border-color:var(--purple);">
+            <h3>👻 Sei nella Giuria dei Morti</h3>
+            <p class="muted">Usa il riquadro Giuria in alto per votare chi maledire al prossimo giorno.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const ap = state.secret.ap;
+      const others = state.players.filter(p => p.id !== me.id);
+      const inRangePlayers = others.filter(p => manhattan(me, p) <= me.range);
+      const aliveInRange = inRangePlayers.filter(p => p.hearts > 0);
+      const deadInRange = inRangePlayers.filter(p => p.hearts === 0);
+      const aliveTargets = others.filter(p => p.hearts > 0);
+
+      const rangeOptionsHtml = inRangePlayers.length
+        ? inRangePlayers.map(p => {
+            const d = manhattan(me, p);
+            const tag = p.hearts > 0 ? `❤️ ${p.hearts}` : "💀 Relitto";
+            return `<option value="${p.id}">${esc(p.name)} (${coordLabel(p.x, p.y)} · d=${d} · ${tag})</option>`;
+          }).join("")
+        : `<option value="">Nessun carro nel tuo raggio (${me.range})</option>`;
+
+      const reviveOptionsHtml = deadInRange.length
+        ? deadInRange.map(p => `<option value="${p.id}">${esc(p.name)} (${coordLabel(p.x, p.y)} · d=${manhattan(me, p)})</option>`).join("")
+        : `<option value="">Nessun relitto nel tuo raggio (${me.range})</option>`;
+
+      const bountyOptionsHtml = aliveTargets.length
+        ? aliveTargets.map(p => {
+            const b = p.bounty_ap || 0;
+            return `<option value="${p.id}">${esc(p.name)} (❤️ ${p.hearts}${b > 0 ? ` · 🎯 +${b} AP` : ""})</option>`;
+          }).join("")
+        : `<option value="">Nessun bersaglio vivo</option>`;
+
+      box.innerHTML = `
+        <div class="action-panel">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px;">
+            <h3 style="margin:0;">⚡ Centro Comandi · ${esc(me.name)}</h3>
+            <span class="badge badge-ap">🔒 ${ap} AP · ❤️ ${me.hearts} · 🔭 ${me.range}</span>
+          </div>
+
+          <!-- 1. Movimento e Fuoco -->
+          <div class="cmd-block">
+            <div class="cmd-title"><span>1. Movimento &amp; Fuoco (1 AP)</span></div>
+            <div class="row" style="margin-bottom:8px;">
+              <button class="btn btn-sm ${state.mode === "move" ? "btn-success" : ""} grow" onclick="setMode('move')" ${ap < 1 ? "disabled" : ""}>
+                🚜 Seleziona Casella Muovi
+              </button>
+              <button class="btn btn-sm ${state.mode === "shoot" ? "btn-danger" : ""} grow" onclick="setMode('shoot')" ${ap < 1 ? "disabled" : ""}>
+                💥 Seleziona Bersaglio Spara
+              </button>
+            </div>
+            <div class="row">
+              <select id="cmdShootSelect" class="input input-sm grow" ${aliveInRange.length === 0 ? "disabled" : ""}>
+                ${aliveInRange.length
+                  ? aliveInRange.map(p => `<option value="${p.id}">Spara a ${esc(p.name)} (❤️ ${p.hearts} · d=${manhattan(me, p)})</option>`).join("")
+                  : `<option value="">Nessun nemico vivo nel raggio (${me.range})</option>`
+                }
+              </select>
+              <button class="btn btn-sm btn-danger" onclick="doCmdShootSelected()" ${ap < 1 || aliveInRange.length === 0 ? "disabled" : ""}>
+                💥 Spara ora
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Potenziamenti -->
+          <div class="cmd-block">
+            <div class="cmd-title"><span>2. Potenziamenti (3 AP)</span></div>
+            <div class="row">
+              <button class="btn btn-sm btn-success grow" onclick="doUpgrade('heart')" ${ap < 3 ? "disabled" : ""}>
+                💖 +1 Cuore (3 AP)
+              </button>
+              <button class="btn btn-sm btn-primary grow" onclick="doUpgrade('range')" ${ap < 3 ? "disabled" : ""}>
+                🔭 +1 Raggio (3 AP)
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Scambi e Resurrezione -->
+          <div class="cmd-block">
+            <div class="cmd-title"><span>3. Scambi nel Raggio (d ≤ ${me.range})</span></div>
+            <select id="cmdGiftTarget" class="input input-sm" style="margin-bottom:7px;" ${inRangePlayers.length === 0 ? "disabled" : ""}>
+              ${rangeOptionsHtml}
+            </select>
+            <div class="row" style="margin-bottom:7px;">
+              <button class="btn btn-sm btn-success grow" onclick="doCmdGiftHeart()" ${me.hearts <= 1 || inRangePlayers.length === 0 ? "disabled" : ""}>
+                💝 Dona 1 ❤️
+              </button>
+              <input id="cmdGiftApAmt" class="input input-sm" type="number" min="1" max="${Math.max(1, ap)}" value="1" style="width:68px;" />
+              <button class="btn btn-sm btn-primary grow" onclick="doCmdGiftAp()" ${ap < 1 || inRangePlayers.length === 0 ? "disabled" : ""}>
+                🤝 Invia AP
+              </button>
+            </div>
+            <div class="row">
+              <select id="cmdReviveTarget" class="input input-sm grow" ${deadInRange.length === 0 ? "disabled" : ""}>
+                ${reviveOptionsHtml}
+              </select>
+              <button class="btn btn-sm btn-purple" onclick="doCmdRevive()" ${me.hearts <= 1 || deadInRange.length === 0 ? "disabled" : ""}>
+                ✨ Resuscita (1 ❤️)
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Taglie Anonime -->
+          <div class="cmd-block">
+            <div class="cmd-title"><span>4. Taglia Anonima (qualunque distanza)</span></div>
+            <div class="row">
+              <select id="cmdBountyTarget" class="input input-sm grow" ${aliveTargets.length === 0 ? "disabled" : ""}>
+                ${bountyOptionsHtml}
+              </select>
+              <input id="cmdBountyAmt" class="input input-sm" type="number" min="1" max="${Math.max(1, ap)}" value="1" style="width:66px;" />
+              <button class="btn btn-sm btn-warn" onclick="doCmdBounty()" ${ap < 1 || aliveTargets.length === 0 ? "disabled" : ""}>
+                🎯 Metti Taglia
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderContextPanel() {
       const box = document.getElementById("contextPanel");
       const me = getMe();
       const target = state.players.find(p => p.id === state.selectedPlayerId);
       const parts = [];
-
-      if (me && me.hearts > 0 && state.game.status === "active") {
-        const ap = state.secret.ap;
-        parts.push(`
-          <div class="action-panel">
-            <div class="row" style="justify-content:space-between;margin-bottom:8px;">
-              <h3 style="margin:0;">⚡ I tuoi Comandi (${esc(me.name)})</h3>
-              <span class="badge badge-ap">🔒 ${ap} AP segreti</span>
-            </div>
-            <div class="row">
-              <button class="btn btn-sm btn-success grow" onclick="doUpgrade('heart')" ${ap < 3 ? "disabled" : ""}>💖 +1 Cuore (3 AP)</button>
-              <button class="btn btn-sm btn-primary grow" onclick="doUpgrade('range')" ${ap < 3 ? "disabled" : ""}>🔭 +1 Raggio (3 AP)</button>
-            </div>
-          </div>
-        `);
-      }
 
       if (me && me.hearts === 0 && state.game.status === "active") {
         const alive = state.players.filter(p => p.hearts > 0);
@@ -1138,7 +1370,7 @@
         if (canActInRange) {
           const ap = state.secret.ap;
           if (target.hearts > 0) {
-            actionsHtml += `
+            actionsHtml = `
               <div class="row" style="margin-top:10px;">
                 <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}')" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
                 <button class="btn btn-sm btn-success grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>💝 Dona 1 ❤️</button>
@@ -1149,14 +1381,14 @@
               </div>
             `;
           } else {
-            actionsHtml += `
+            actionsHtml = `
               <div class="row" style="margin-top:10px;">
                 <button class="btn btn-sm btn-purple grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>✨ Resuscita ${esc(target.name)} (dona 1 ❤️)</button>
               </div>
             `;
           }
         } else if (me && target.id !== me.id && me.hearts > 0) {
-          actionsHtml += `<p class="muted" style="margin-top:8px;">Fuori portata per sparo/scambi: distanza <strong>${dist}</strong> (raggio ${me.range}).</p>`;
+          actionsHtml = `<p class="muted" style="margin-top:8px;">Fuori portata per sparo/scambi: distanza <strong>${dist}</strong> (raggio ${me.range}).</p>`;
         }
 
         if (canPlaceBounty) {
@@ -1164,11 +1396,11 @@
           actionsHtml += `
             <div class="sub-divider">
               <div class="muted" style="font-size:0.78rem;margin-bottom:6px;">
-                🎯 <strong>Metti una taglia (a qualsiasi distanza):</strong> spendi AP segreti in modo anonimo; chi lo uccide li incassa.
+                🎯 <strong>Taglia anonima (qualunque distanza):</strong> chi elimina ${esc(target.name)} incassa gli AP.
               </div>
               <div class="row">
                 <input id="bountyApAmt" class="input" type="number" min="1" max="${Math.max(1, ap)}" value="1" style="width:76px;padding:6px 8px;" />
-                <button class="btn btn-sm btn-warn grow" onclick="doPlaceBountyFromInput('${target.id}')" ${ap < 1 ? "disabled" : ""}>🎯 Piazza Taglia Anonima</button>
+                <button class="btn btn-sm btn-warn grow" onclick="doPlaceBountyFromInput('${target.id}')" ${ap < 1 ? "disabled" : ""}>🎯 Piazza Taglia</button>
               </div>
             </div>
           `;
@@ -1178,7 +1410,9 @@
           <div class="action-panel" style="border-color:${esc(target.color)};">
             <div class="row" style="justify-content:space-between;">
               <div class="row" style="gap:8px;">
-                <span class="dot" style="background:${esc(target.color)};"></span>
+                <div class="tank-sprite-wrap ${target.hearts <= 0 ? "dead" : ""}" style="width:28px;height:24px;">
+                  ${renderTankSprite(target, target.hearts <= 0)}
+                </div>
                 <strong>${esc(target.name)}</strong>
                 <span class="muted">(${coordLabel(target.x, target.y)})</span>
                 ${target.hearts > 0 && bounty > 0 ? `<span class="badge badge-bounty">🎯 +${bounty} AP</span>` : ""}
@@ -1216,7 +1450,9 @@
         return `
           <div class="player-item ${p.hearts <= 0 ? "dead" : ""}" onclick="state.selectedPlayerId='${p.id}';renderBoard();renderContextPanel();">
             <div class="row" style="gap:9px;">
-              <span class="dot" style="background:${esc(p.color)};"></span>
+              <div class="tank-sprite-wrap ${p.hearts <= 0 ? "dead" : ""}" style="width:28px;height:24px;">
+                ${renderTankSprite(p, p.hearts <= 0)}
+              </div>
               <div>
                 <div class="row" style="gap:6px;">
                   <strong>${esc(p.name)}</strong>
@@ -1358,7 +1594,7 @@
     function switchTab(tab) { state.activeTab = tab; applyActiveTab(); }
 
     function applyActiveTab() {
-      ["players", "logs", "gm", "rules"].forEach(t => {
+      ["commands", "players", "logs", "gm", "rules"].forEach(t => {
         const panel = document.getElementById("tab-" + t);
         if (panel) panel.classList.toggle("hidden", t !== state.activeTab);
       });
@@ -1402,6 +1638,12 @@
       await doShoot(targetId);
     }
 
+    async function doCmdShootSelected() {
+      const sel = document.getElementById("cmdShootSelect");
+      if (!sel || !sel.value) return;
+      await confirmShoot(sel.value);
+    }
+
     async function doShoot(targetId) {
       await runRpc("ttt_shoot", { p_game_id: gameId, p_token: token, p_target_id: targetId },
         (d) => {
@@ -1432,6 +1674,44 @@
       const amt = parseInt(document.getElementById("giftApAmt").value, 10);
       if (!amt || amt < 1) return showToast("Inserisci un numero valido di AP.", "error");
       await doGift(targetId, "ap", amt);
+    }
+
+    async function doCmdGiftHeart() {
+      const sel = document.getElementById("cmdGiftTarget");
+      if (!sel || !sel.value) return;
+      await doGift(sel.value, "heart", 1);
+    }
+
+    async function doCmdGiftAp() {
+      const sel = document.getElementById("cmdGiftTarget");
+      const amtInput = document.getElementById("cmdGiftApAmt");
+      if (!sel || !sel.value || !amtInput) return;
+      const amt = parseInt(amtInput.value, 10);
+      if (!amt || amt < 1) return showToast("Inserisci un numero valido di AP.", "error");
+      await doGift(sel.value, "ap", amt);
+    }
+
+    async function doCmdRevive() {
+      const sel = document.getElementById("cmdReviveTarget");
+      if (!sel || !sel.value) return;
+      await doGift(sel.value, "heart", 1);
+    }
+
+    async function doCmdBounty() {
+      const sel = document.getElementById("cmdBountyTarget");
+      const amtInput = document.getElementById("cmdBountyAmt");
+      if (!sel || !sel.value || !amtInput) return;
+      const amt = parseInt(amtInput.value, 10);
+      if (!amt || amt < 1) return showToast("Inserisci almeno 1 AP per la taglia.", "error");
+      const target = state.players.find(p => p.id === sel.value);
+      if (!target) return;
+      if (!confirm(`Vuoi spendere ${amt} AP segreti per mettere una taglia anonima su ${target.name}?`)) return;
+      await runRpc("ttt_place_bounty", {
+        p_game_id: gameId,
+        p_token: token,
+        p_target_id: sel.value,
+        p_amount: amt
+      }, (d) => `🎯 Taglia piazzata su ${target.name}! (Taglia totale: ${d.bounty_ap} AP · AP rimasti: ${d.ap})`);
     }
 
     async function doPlaceBountyFromInput(targetId) {
