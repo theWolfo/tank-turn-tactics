@@ -84,6 +84,7 @@
       outline: none;
     }
     .input:focus { border-color: var(--accent); }
+    .input-sm { padding: 6px 9px; font-size: 0.8rem; }
 
     .badge {
       display: inline-flex;
@@ -114,7 +115,7 @@
 
     .lobby-grid {
       display: grid;
-      grid-template-columns: 1.4fr 1fr;
+      grid-template-columns: 1.45fr 0.95fr;
       gap: 18px;
       margin-top: 16px;
     }
@@ -134,11 +135,20 @@
 
     .player-setup-row {
       display: grid;
-      grid-template-columns: 42px 1fr 38px;
+      grid-template-columns: 42px 1.15fr 1fr 38px;
       gap: 8px;
       margin-bottom: 8px;
       align-items: center;
     }
+    @media (max-width: 640px) {
+      .player-setup-row {
+        grid-template-columns: 42px 1fr 38px;
+      }
+      .player-setup-row .discord-setup-input {
+        grid-column: 1 / -1;
+      }
+    }
+
     .color-input {
       width: 42px; height: 38px; padding: 2px;
       background: #0d1523; border: 1px solid var(--border);
@@ -250,6 +260,14 @@
       padding: 8px; background: #0e1624; border: 1px solid #1f2e47;
       border-radius: 8px; margin-bottom: 6px; font-size: 0.85rem;
     }
+    .gm-player-card {
+      padding: 9px; background: #0e1624; border: 1px solid #1f2e47;
+      border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem;
+    }
+    .gm-discord-row {
+      display: flex; gap: 6px; align-items: center; margin-top: 7px;
+      padding-top: 7px; border-top: 1px dashed #1f2e47;
+    }
 
     .toast {
       position: fixed; bottom: 20px; right: 20px; max-width: 380px;
@@ -280,7 +298,7 @@
       <div class="topbar">
         <div class="title-block">
           <h1>🛡️ Tank Turn Tactics — Online</h1>
-          <p class="muted">Distanza di Manhattan · AP Segreti lato server · Orario Giornaliero Automatico</p>
+          <p class="muted">Distanza di Manhattan · AP Segreti lato server · Sync Ruoli Discord</p>
         </div>
       </div>
 
@@ -347,7 +365,7 @@
 
           <div class="field">
             <div class="row" style="justify-content:space-between;margin-bottom:6px;">
-              <label style="margin:0;">Giocatori (minimo 2)</label>
+              <label style="margin:0;">Giocatori (Discord ID facoltativo per sync Vivo/Fantasma)</label>
               <button type="button" class="btn btn-sm" onclick="addSetupPlayer()">+ Aggiungi Giocatore</button>
             </div>
             <div id="setupPlayersList"></div>
@@ -456,8 +474,8 @@
     // =========================================================================
     // 1. CONFIGURAZIONE SUPABASE (REINSERISCI QUI I TUOI 2 VALORI!)
     // =========================================================================
-    const SUPABASE_URL = "https://ghfghizzvyscnaubihpx.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_8gANMmEZXThXXQu3ismTvA_hoS75jHg";
+    const SUPABASE_URL = "INCOLLA_QUI_IL_TUO_PROJECT_URL";
+    const SUPABASE_KEY = "INCOLLA_QUI_LA_TUA_PUBLISHABLE_KEY";
 
     // =========================================================================
     // STATO APPLICAZIONE
@@ -484,12 +502,12 @@
       busy: false
     };
     let setupPlayers = [
-      { name: "Giocatore 1", color: DEFAULT_COLORS[0] },
-      { name: "Giocatore 2", color: DEFAULT_COLORS[1] },
-      { name: "Giocatore 3", color: DEFAULT_COLORS[2] },
-      { name: "Giocatore 4", color: DEFAULT_COLORS[3] },
-      { name: "Giocatore 5", color: DEFAULT_COLORS[4] },
-      { name: "Giocatore 6", color: DEFAULT_COLORS[5] }
+      { name: "Giocatore 1", color: DEFAULT_COLORS[0], discord_user_id: "" },
+      { name: "Giocatore 2", color: DEFAULT_COLORS[1], discord_user_id: "" },
+      { name: "Giocatore 3", color: DEFAULT_COLORS[2], discord_user_id: "" },
+      { name: "Giocatore 4", color: DEFAULT_COLORS[3], discord_user_id: "" },
+      { name: "Giocatore 5", color: DEFAULT_COLORS[4], discord_user_id: "" },
+      { name: "Giocatore 6", color: DEFAULT_COLORS[5], discord_user_id: "" }
     ];
     let realtimeChannel = null;
     let refreshTimer = null;
@@ -521,6 +539,10 @@
       return parts[0].slice(0, 2).toUpperCase();
     }
 
+    function isValidDiscordId(val) {
+      return /^\d{17,20}$/.test(String(val || "").trim());
+    }
+
     function showToast(message, type = "info") {
       const root = document.getElementById("toastRoot");
       const el = document.createElement("div");
@@ -548,6 +570,12 @@
       } catch {
         prompt("Copia questo link:", text);
       }
+    }
+
+    function copyPlayerLink(playerId) {
+      const gmP = (state.secret.players || []).find(p => p.id === playerId);
+      if (!gmP) return;
+      copyText(buildLink(gameId, gmP.token), `Link di ${gmP.name} copiato!`);
     }
 
     function saveRecentGame(entry) {
@@ -644,7 +672,11 @@
 
     function addSetupPlayer() {
       const idx = setupPlayers.length;
-      setupPlayers.push({ name: "Giocatore " + (idx + 1), color: DEFAULT_COLORS[idx % DEFAULT_COLORS.length] });
+      setupPlayers.push({
+        name: "Giocatore " + (idx + 1),
+        color: DEFAULT_COLORS[idx % DEFAULT_COLORS.length],
+        discord_user_id: ""
+      });
       renderSetupPlayers();
     }
 
@@ -658,8 +690,12 @@
       const box = document.getElementById("setupPlayersList");
       box.innerHTML = setupPlayers.map((p, i) => `
         <div class="player-setup-row">
-          <input class="color-input" type="color" value="${esc(p.color)}" onchange="setupPlayers[${i}].color = this.value" />
-          <input class="input" type="text" value="${esc(p.name)}" maxlength="24" oninput="setupPlayers[${i}].name = this.value" placeholder="Nome giocatore" />
+          <input class="color-input" type="color" value="${esc(p.color)}"
+            onchange="setupPlayers[${i}].color = this.value" />
+          <input class="input" type="text" value="${esc(p.name)}" maxlength="24"
+            oninput="setupPlayers[${i}].name = this.value" placeholder="Nome giocatore" />
+          <input class="input discord-setup-input" type="text" inputmode="numeric" value="${esc(p.discord_user_id || "")}" maxlength="22"
+            oninput="setupPlayers[${i}].discord_user_id = this.value" placeholder="Discord ID (opz.)" title="Clic destro sul profilo su Discord → Copia ID utente" />
           <button type="button" class="btn btn-sm" onclick="removeSetupPlayer(${i})" title="Rimuovi">✕</button>
         </div>
       `).join("");
@@ -712,11 +748,21 @@
       const autoHeart = document.getElementById("cfgAutoHeart").checked;
 
       const cleaned = setupPlayers
-        .map(p => ({ name: p.name.trim(), color: p.color }))
+        .map(p => ({
+          name: p.name.trim(),
+          color: p.color,
+          discord_user_id: String(p.discord_user_id || "").trim()
+        }))
         .filter(p => p.name.length > 0);
 
       if (cleaned.length < 2) return showToast("Inserisci almeno 2 giocatori con un nome.", "error");
       if (cleaned.length > width * height) return showToast("Troppi giocatori per questa dimensione di mappa.", "error");
+
+      for (const p of cleaned) {
+        if (p.discord_user_id && !isValidDiscordId(p.discord_user_id)) {
+          return showToast(`Discord ID non valido per "${p.name}": deve essere un numero di 17-20 cifre.`, "error");
+        }
+      }
 
       const btn = document.getElementById("createGameBtn");
       btn.disabled = true;
@@ -726,7 +772,11 @@
         p_name: name,
         p_width: width,
         p_height: height,
-        p_players: cleaned,
+        p_players: cleaned.map(p => ({
+          name: p.name,
+          color: p.color,
+          discord_user_id: p.discord_user_id || null
+        })),
         p_discord_webhook: webhook,
         p_prizes_enabled: prizes,
         p_auto_day_enabled: autoEnabled,
@@ -1070,7 +1120,7 @@
           if (target.hearts > 0) {
             actionsHtml = `
               <div class="row" style="margin-top:10px;">
-                <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}','${esc(target.name)}',${target.hearts})" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
+                <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}')" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
                 <button class="btn btn-sm btn-success grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>💝 Dona 1 ❤️</button>
               </div>
               <div class="row" style="margin-top:8px;">
@@ -1169,6 +1219,7 @@
 
       const g = state.game;
       const gmPlayers = state.secret.players || [];
+      const pubMap = new Map(state.players.map(p => [p.id, p]));
       const spectatorUrl = buildLink(gameId);
       const gmUrl = buildLink(gameId, token);
       const currentTime = String(g.auto_day_time || "09:00").slice(0, 5);
@@ -1209,26 +1260,37 @@
 
         <div class="action-panel">
           <div class="row" style="justify-content:space-between;margin-bottom:8px;">
-            <h3 style="margin:0;">🔑 Link Segreti dei Giocatori</h3>
+            <h3 style="margin:0;">🔑 Link Segreti &amp; Sync Ruoli Discord</h3>
             <label class="muted" style="font-size:0.78rem;display:flex;align-items:center;gap:5px;cursor:pointer;">
               <input type="checkbox" ${state.gmRevealAp ? "checked" : ""} onchange="state.gmRevealAp=this.checked;renderGmTab();" />
               Mostra AP (spoiler!)
             </label>
           </div>
+          <p class="muted" style="margin-bottom:8px;font-size:0.78rem;">
+            Inserendo il Discord ID (17–20 cifre) e premendo 💾, il bot sincronizza subito il ruolo <strong>Vivo</strong> / <strong>Fantasma</strong> sul server.
+          </p>
           ${gmPlayers.map(p => {
-            const pUrl = buildLink(gameId, p.token);
+            const pub = pubMap.get(p.id);
+            const currentDiscordId = pub?.discord_user_id || "";
             return `
-              <div class="link-row">
-                <div class="row" style="gap:7px;">
-                  <span class="dot" style="background:${esc(p.color)};"></span>
-                  <div>
-                    <strong>${esc(p.name)}</strong>
-                    <div class="muted" style="font-size:0.75rem;">
-                      ${p.hearts > 0 ? "❤️ " + p.hearts : "💀 Morto"} · AP: ${state.gmRevealAp ? p.ap : "🔒 nascosti"}
+              <div class="gm-player-card">
+                <div class="row" style="justify-content:space-between;gap:8px;">
+                  <div class="row" style="gap:7px;">
+                    <span class="dot" style="background:${esc(p.color)};"></span>
+                    <div>
+                      <strong>${esc(p.name)}</strong> ${currentDiscordId ? '<span class="muted" title="Collegato a Discord">· 🔗 Discord ✅</span>' : ""}
+                      <div class="muted" style="font-size:0.75rem;">
+                        ${p.hearts > 0 ? "❤️ " + p.hearts : "💀 Morto"} · AP: ${state.gmRevealAp ? p.ap : "🔒 nascosti"}
+                      </div>
                     </div>
                   </div>
+                  <button class="btn btn-sm btn-primary" onclick="copyPlayerLink('${p.id}')">📋 Copia Link</button>
                 </div>
-                <button class="btn btn-sm btn-primary" onclick="copyText('${pUrl}', 'Link di ${esc(p.name)} copiato!')">📋 Copia</button>
+                <div class="gm-discord-row">
+                  <input id="gmDiscordId-${p.id}" class="input input-sm" type="text" inputmode="numeric" maxlength="22"
+                    value="${esc(currentDiscordId)}" placeholder="Discord User ID (opzionale)..." />
+                  <button class="btn btn-sm" onclick="doGmSetDiscordId('${p.id}')" title="Salva e sincronizza ruolo Discord">💾</button>
+                </div>
               </div>
             `;
           }).join("")}
@@ -1290,8 +1352,10 @@
       );
     }
 
-    async function confirmShoot(targetId, targetName, targetHearts) {
-      if (!confirm(`Sparare a ${targetName} per 1 AP? (Scenderà a ${targetHearts - 1} ❤️)`)) return;
+    async function confirmShoot(targetId) {
+      const target = state.players.find(p => p.id === targetId);
+      if (!target) return;
+      if (!confirm(`Sparare a ${target.name} per 1 AP? (Scenderà a ${target.hearts - 1} ❤️)`)) return;
       await doShoot(targetId);
     }
 
@@ -1327,6 +1391,21 @@
 
     async function doJuryVote(targetId) {
       await runRpc("ttt_jury_vote", { p_game_id: gameId, p_token: token, p_target_id: targetId }, "👻 Voto della Giuria registrato!");
+    }
+
+    async function doGmSetDiscordId(playerId) {
+      const input = document.getElementById(`gmDiscordId-${playerId}`);
+      if (!input) return;
+      const val = input.value.trim();
+      if (val && !isValidDiscordId(val)) {
+        return showToast("Discord ID non valido: inserisci un numero di 17-20 cifre (o lascia vuoto per scollegare).", "error");
+      }
+      await runRpc("ttt_gm_set_discord_id", {
+        p_game_id: gameId,
+        p_gm_token: token,
+        p_player_id: playerId,
+        p_discord_user_id: val
+      }, val ? "🔗 Discord ID salvato e ruolo sincronizzato!" : "Discord ID rimosso.");
     }
 
     async function doGmSaveSchedule() {
