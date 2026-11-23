@@ -103,6 +103,13 @@
     .badge-danger { background: rgba(239,68,68,0.16); border-color: #ef4444; color: #fca5a5; }
     .badge-ok { background: rgba(34,197,94,0.16); border-color: #22c55e; color: #86efac; }
     .badge-clock { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.5); color: #bae6fd; font-variant-numeric: tabular-nums; }
+    .badge-bounty {
+      background: rgba(245,158,11,0.2);
+      border-color: #f59e0b;
+      color: #fde68a;
+      padding: 2px 7px;
+      font-size: 0.72rem;
+    }
 
     .config-banner {
       background: rgba(245,158,11,0.14);
@@ -141,12 +148,8 @@
       align-items: center;
     }
     @media (max-width: 640px) {
-      .player-setup-row {
-        grid-template-columns: 42px 1fr 38px;
-      }
-      .player-setup-row .discord-setup-input {
-        grid-column: 1 / -1;
-      }
+      .player-setup-row { grid-template-columns: 42px 1fr 38px; }
+      .player-setup-row .discord-setup-input { grid-column: 1 / -1; }
     }
 
     .color-input {
@@ -204,6 +207,7 @@
     .tile.can-shoot { background: rgba(239, 68, 68, 0.22); border-color: #ef4444; box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.35); }
     .tile.selected { outline: 2px solid #facc15; outline-offset: -2px; z-index: 2; }
     .tile.is-me { box-shadow: inset 0 0 0 2px #38bdf8; }
+    .tile.has-bounty { border-color: rgba(245, 158, 11, 0.75); }
 
     .tank-token {
       width: 72%; height: 54%; min-height: 20px; border-radius: 6px;
@@ -215,6 +219,11 @@
     .tank-token.dead { opacity: 0.45; filter: grayscale(0.8); border-style: dashed; }
     .tank-hearts { font-size: 0.66rem; font-weight: 700; margin-top: 2px; color: #fda4af; line-height: 1; white-space: nowrap; }
     .haunt-pip { position: absolute; top: -5px; right: -5px; font-size: 0.7rem; filter: drop-shadow(0 1px 2px #000); }
+    .bounty-pip {
+      position: absolute; top: -6px; left: -6px;
+      background: #b45309; border: 1px solid #f59e0b; color: #fff;
+      border-radius: 999px; padding: 0 4px; font-size: 0.6rem; font-weight: 800; line-height: 1.3;
+    }
     .heart-drop { font-size: 1.25rem; animation: pulse 1.6s infinite ease-in-out; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
 
@@ -251,7 +260,7 @@
     }
     .log-item.kill, .log-item.shoot { border-left-color: var(--danger); }
     .log-item.heart, .log-item.revive { border-left-color: #ec4899; }
-    .log-item.day { border-left-color: var(--warn); }
+    .log-item.day, .log-item.bounty { border-left-color: var(--warn); }
     .log-item.gift, .log-item.upgrade { border-left-color: var(--accent-2); }
     .log-time { font-size: 0.72rem; color: var(--muted); margin-bottom: 2px; }
 
@@ -267,6 +276,11 @@
     .gm-discord-row {
       display: flex; gap: 6px; align-items: center; margin-top: 7px;
       padding-top: 7px; border-top: 1px dashed #1f2e47;
+    }
+    .sub-divider {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
     }
 
     .toast {
@@ -298,7 +312,7 @@
       <div class="topbar">
         <div class="title-block">
           <h1>🛡️ Tank Turn Tactics — Online</h1>
-          <p class="muted">Distanza di Manhattan · AP Segreti lato server · Sync Ruoli Discord</p>
+          <p class="muted">Distanza di Manhattan · AP Segreti · Taglie · Sync Ruoli Discord</p>
         </div>
       </div>
 
@@ -456,9 +470,10 @@
                 1. Muovi in una casella ortogonale libera (<strong>1 AP</strong>)<br/>
                 2. Spara a un carro nel tuo raggio Manhattan: toglie 1 ❤️ (<strong>1 AP</strong> — sparo anonimo nel bollettino)<br/>
                 3. Aggiungi +1 ❤️ (<strong>3 AP</strong>)<br/>
-                4. Potenzia il raggio di +1 (<strong>3 AP</strong>)
+                4. Potenzia il raggio di +1 (<strong>3 AP</strong>)<br/>
+                5. Piazza una <strong>Taglia (🎯)</strong> da 1+ AP su un carro vivo qualsiasi: il mandante resta anonimo e chi lo elimina incassa la taglia.
               </p>
-              <p><strong>• Eliminazione:</strong> a 0 ❤️ sei morto, resti sulla mappa come relitto bloccante e <strong>tutti i tuoi AP segreti</strong> passano a chi ti ha ucciso (la morte è annunciata con il nome del killer).</p>
+              <p><strong>• Eliminazione:</strong> a 0 ❤️ sei morto, resti sulla mappa come relitto bloccante e <strong>tutti i tuoi AP segreti + eventuali taglie sulla tua testa</strong> passano a chi ti ha ucciso.</p>
               <p><strong>• Scambi &amp; Resurrezione:</strong> puoi regalare ❤️ o AP a chiunque nel tuo raggio. Donare 1 ❤️ a un relitto lo resuscita con 1 ❤️ e 0 AP.</p>
               <p><strong>• Giuria &amp; Cuori:</strong> i morti votano chi maledire (<em>haunt</em>) al prossimo giro. Una volta al giorno appare un ❤️ sulla mappa per il primo che ci entra.</p>
             </div>
@@ -951,14 +966,14 @@
         <button class="btn btn-sm mode-btn ${state.mode === "inspect" ? "active" : ""}" onclick="setMode('inspect')">👆 Ispeziona</button>
         <button class="btn btn-sm mode-btn ${state.mode === "move" ? "active" : ""}" onclick="setMode('move')" ${ap < 1 ? "disabled" : ""}>🚜 Muovi (1 AP)</button>
         <button class="btn btn-sm mode-btn ${state.mode === "shoot" ? "active" : ""}" onclick="setMode('shoot')" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
-        <button class="btn btn-sm mode-btn ${state.mode === "gift" ? "active" : ""}" onclick="setMode('gift')">🎁 Regala / Resuscita</button>
+        <button class="btn btn-sm mode-btn ${state.mode === "gift" ? "active" : ""}" onclick="setMode('gift')">🎁 Regala / Taglie</button>
       `;
 
       const hints = {
-        inspect: "Clicca un carro armato sulla mappa per vedere distanza, raggio e opzioni.",
+        inspect: "Clicca un carro armato sulla mappa per vedere distanza, raggio, taglie e opzioni.",
         move: "Clicca una delle caselle verdi adiacenti (distanza Manhattan = 1) per spostarti.",
         shoot: "Clicca un nemico evidenziato in rosso nel tuo raggio Manhattan per sparargli (-1 ❤️).",
-        gift: "Clicca un alleato (o un relitto da resuscitare) nel tuo raggio Manhattan per aprire il pannello regali."
+        gift: "Clicca un alleato nel tuo raggio per inviare risorse, oppure un bersaglio qualsiasi per piazzare una taglia anonima."
       };
       hint.textContent = hints[state.mode] || "";
     }
@@ -1000,6 +1015,7 @@
           const classes = ["tile"];
           if (me && me.x === x && me.y === y) classes.push("is-me");
           if (p && state.selectedPlayerId === p.id) classes.push("selected");
+          if (p && p.hearts > 0 && (p.bounty_ap || 0) > 0) classes.push("has-bounty");
 
           if (rangeOrigin && rangeOrigin.hearts > 0) {
             const d = Math.abs(x - rangeOrigin.x) + Math.abs(y - rangeOrigin.y);
@@ -1016,9 +1032,11 @@
           if (p) {
             const isDead = p.hearts <= 0;
             const isHaunted = g.haunted_player_id === p.id;
+            const bounty = p.bounty_ap || 0;
             inner = `
               <div class="tank-token ${isDead ? "dead" : ""}" style="background:${esc(p.color)};" title="${esc(p.name)} (${coordLabel(x, y)})">
                 ${isDead ? "💀" : esc(initials(p.name))}
+                ${!isDead && bounty > 0 ? `<span class="bounty-pip" title="Taglia attiva: +${bounty} AP">🎯${bounty}</span>` : ""}
                 ${isHaunted ? '<span class="haunt-pip" title="Maledetto oggi">👻</span>' : ""}
               </div>
               <div class="tank-hearts">${isDead ? "RELITTO" : "❤️" + p.hearts}</div>
@@ -1112,13 +1130,15 @@
       if (target) {
         const dist = me ? manhattan(me, target) : null;
         const inRange = me && me.hearts > 0 && target.id !== me.id && dist <= me.range;
-        const canAct = inRange && state.game.status === "active";
+        const canActInRange = inRange && state.game.status === "active";
+        const canPlaceBounty = me && me.hearts > 0 && target.id !== me.id && target.hearts > 0 && state.game.status === "active";
+        const bounty = target.bounty_ap || 0;
 
         let actionsHtml = "";
-        if (canAct) {
+        if (canActInRange) {
           const ap = state.secret.ap;
           if (target.hearts > 0) {
-            actionsHtml = `
+            actionsHtml += `
               <div class="row" style="margin-top:10px;">
                 <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}')" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
                 <button class="btn btn-sm btn-success grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>💝 Dona 1 ❤️</button>
@@ -1129,14 +1149,29 @@
               </div>
             `;
           } else {
-            actionsHtml = `
+            actionsHtml += `
               <div class="row" style="margin-top:10px;">
                 <button class="btn btn-sm btn-purple grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>✨ Resuscita ${esc(target.name)} (dona 1 ❤️)</button>
               </div>
             `;
           }
         } else if (me && target.id !== me.id && me.hearts > 0) {
-          actionsHtml = `<p class="muted" style="margin-top:8px;">Fuori portata: distanza Manhattan <strong>${dist}</strong> (il tuo raggio è ${me.range}).</p>`;
+          actionsHtml += `<p class="muted" style="margin-top:8px;">Fuori portata per sparo/scambi: distanza <strong>${dist}</strong> (raggio ${me.range}).</p>`;
+        }
+
+        if (canPlaceBounty) {
+          const ap = state.secret.ap;
+          actionsHtml += `
+            <div class="sub-divider">
+              <div class="muted" style="font-size:0.78rem;margin-bottom:6px;">
+                🎯 <strong>Metti una taglia (a qualsiasi distanza):</strong> spendi AP segreti in modo anonimo; chi lo uccide li incassa.
+              </div>
+              <div class="row">
+                <input id="bountyApAmt" class="input" type="number" min="1" max="${Math.max(1, ap)}" value="1" style="width:76px;padding:6px 8px;" />
+                <button class="btn btn-sm btn-warn grow" onclick="doPlaceBountyFromInput('${target.id}')" ${ap < 1 ? "disabled" : ""}>🎯 Piazza Taglia Anonima</button>
+              </div>
+            </div>
+          `;
         }
 
         parts.push(`
@@ -1146,6 +1181,7 @@
                 <span class="dot" style="background:${esc(target.color)};"></span>
                 <strong>${esc(target.name)}</strong>
                 <span class="muted">(${coordLabel(target.x, target.y)})</span>
+                ${target.hearts > 0 && bounty > 0 ? `<span class="badge badge-bounty">🎯 +${bounty} AP</span>` : ""}
               </div>
               <button class="btn btn-sm" onclick="state.selectedPlayerId=null;renderBoard();renderContextPanel();">✕</button>
             </div>
@@ -1168,12 +1204,13 @@
       const me = getMe();
       const sorted = [...state.players].sort((a, b) => {
         if ((b.hearts > 0) !== (a.hearts > 0)) return (b.hearts > 0) ? 1 : -1;
-        return b.hearts - a.hearts || b.kills - a.kills;
+        return b.hearts - a.hearts || (b.bounty_ap || 0) - (a.bounty_ap || 0) || b.kills - a.kills;
       });
 
       box.innerHTML = sorted.map(p => {
         const isMe = me && me.id === p.id;
         const isHaunted = state.game.haunted_player_id === p.id;
+        const bounty = p.bounty_ap || 0;
         const dist = me && !isMe ? ` · 📏 d=${manhattan(me, p)}` : "";
         const apText = isMe ? `🔒 ${state.secret.ap} AP` : "🔒 ???";
         return `
@@ -1181,7 +1218,12 @@
             <div class="row" style="gap:9px;">
               <span class="dot" style="background:${esc(p.color)};"></span>
               <div>
-                <strong>${esc(p.name)}</strong> ${isMe ? '<span class="muted">(Tu)</span>' : ""} ${isHaunted ? "👻" : ""}
+                <div class="row" style="gap:6px;">
+                  <strong>${esc(p.name)}</strong>
+                  ${isMe ? '<span class="muted">(Tu)</span>' : ""}
+                  ${isHaunted ? "👻" : ""}
+                  ${p.hearts > 0 && bounty > 0 ? `<span class="badge badge-bounty">🎯 +${bounty} AP</span>` : ""}
+                </div>
                 <div class="muted" style="font-size:0.78rem;">${coordLabel(p.x, p.y)} · 🔭 ${p.range} · ☠️ ${p.kills}${dist}</div>
               </div>
             </div>
@@ -1272,6 +1314,7 @@
           ${gmPlayers.map(p => {
             const pub = pubMap.get(p.id);
             const currentDiscordId = pub?.discord_user_id || "";
+            const bounty = pub?.bounty_ap || 0;
             return `
               <div class="gm-player-card">
                 <div class="row" style="justify-content:space-between;gap:8px;">
@@ -1280,7 +1323,7 @@
                     <div>
                       <strong>${esc(p.name)}</strong> ${currentDiscordId ? '<span class="muted" title="Collegato a Discord">· 🔗 Discord ✅</span>' : ""}
                       <div class="muted" style="font-size:0.75rem;">
-                        ${p.hearts > 0 ? "❤️ " + p.hearts : "💀 Morto"} · AP: ${state.gmRevealAp ? p.ap : "🔒 nascosti"}
+                        ${p.hearts > 0 ? "❤️ " + p.hearts : "💀 Morto"} · AP: ${state.gmRevealAp ? p.ap : "🔒 nascosti"}${bounty > 0 ? ` · 🎯 Taglia: ${bounty} AP` : ""}
                       </div>
                     </div>
                   </div>
@@ -1361,9 +1404,11 @@
 
     async function doShoot(targetId) {
       await runRpc("ttt_shoot", { p_game_id: gameId, p_token: token, p_target_id: targetId },
-        (d) => d.killed
-          ? `💥 Bersaglio distrutto! Hai incassato +${d.looted_ap} AP segreti (Totale: ${d.ap} AP).`
-          : `💥 Colpo andato a segno! (AP rimasti: ${d.ap})`
+        (d) => {
+          if (!d.killed) return `💥 Colpo andato a segno! (AP rimasti: ${d.ap})`;
+          const extra = d.bounty_ap > 0 ? ` + ${d.bounty_ap} AP di taglia` : "";
+          return `💥 Bersaglio distrutto! Hai incassato +${d.looted_ap} AP${extra} (Totale: ${d.ap} AP).`;
+        }
       );
     }
 
@@ -1387,6 +1432,20 @@
       const amt = parseInt(document.getElementById("giftApAmt").value, 10);
       if (!amt || amt < 1) return showToast("Inserisci un numero valido di AP.", "error");
       await doGift(targetId, "ap", amt);
+    }
+
+    async function doPlaceBountyFromInput(targetId) {
+      const amt = parseInt(document.getElementById("bountyApAmt").value, 10);
+      if (!amt || amt < 1) return showToast("Inserisci almeno 1 AP per la taglia.", "error");
+      const target = state.players.find(p => p.id === targetId);
+      if (!target) return;
+      if (!confirm(`Vuoi spendere ${amt} AP segreti per mettere una taglia anonima su ${target.name}?`)) return;
+      await runRpc("ttt_place_bounty", {
+        p_game_id: gameId,
+        p_token: token,
+        p_target_id: targetId,
+        p_amount: amt
+      }, (d) => `🎯 Taglia piazzata su ${target.name}! (Taglia totale: ${d.bounty_ap} AP · AP rimasti: ${d.ap})`);
     }
 
     async function doJuryVote(targetId) {
