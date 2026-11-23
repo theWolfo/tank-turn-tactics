@@ -8,8 +8,15 @@
   <style>
     :root {
       --bg: #0b111b;
+      --bg-grad: radial-gradient(circle at top, #132035 0%, var(--bg) 55%);
       --panel: #131c2b;
       --panel-2: #192438;
+      --tile-bg: #0e1726;
+      --tile-hover: #142238;
+      --tile-border: #1e2d45;
+      --sub-bg: #0e1624;
+      --item-bg: #0f1726;
+      --input-bg: #0d1523;
       --border: #26354f;
       --text: #e6edf7;
       --muted: #8ea0bc;
@@ -21,14 +28,69 @@
       --radius: 12px;
     }
 
+    :root[data-theme="desert"] {
+      --bg: #1a130b;
+      --bg-grad: radial-gradient(circle at top, #2e2011 0%, var(--bg) 58%);
+      --panel: #251a0f;
+      --panel-2: #312315;
+      --tile-bg: #1d140c;
+      --tile-hover: #2c1f13;
+      --tile-border: #47331e;
+      --sub-bg: #1b130b;
+      --item-bg: #20160d;
+      --input-bg: #18110a;
+      --border: #523b23;
+      --text: #f5ead8;
+      --muted: #c4ad8b;
+      --accent: #eab308;
+      --accent-2: #4ade80;
+    }
+
+    :root[data-theme="arctic"] {
+      --bg: #0b1724;
+      --bg-grad: radial-gradient(circle at top, #152b42 0%, var(--bg) 58%);
+      --panel: #102133;
+      --panel-2: #172c44;
+      --tile-bg: #0c1927;
+      --tile-hover: #13263b;
+      --tile-border: #223d5a;
+      --sub-bg: #0c1826;
+      --item-bg: #0e1c2c;
+      --input-bg: #0a1420;
+      --border: #2b4b6e;
+      --text: #eaf4ff;
+      --muted: #93b3d1;
+      --accent: #67e8f9;
+      --accent-2: #34d399;
+    }
+
+    :root[data-theme="paper"] {
+      --bg: #e9eef5;
+      --bg-grad: radial-gradient(circle at top, #f8fafc 0%, var(--bg) 65%);
+      --panel: #ffffff;
+      --panel-2: #f1f5f9;
+      --tile-bg: #f8fafc;
+      --tile-hover: #e2e8f0;
+      --tile-border: #cbd5e1;
+      --sub-bg: #f8fafc;
+      --item-bg: #f1f5f9;
+      --input-bg: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0284c7;
+      --accent-2: #16a34a;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: radial-gradient(circle at top, #132035 0%, var(--bg) 55%);
+      background: var(--bg-grad);
       color: var(--text);
       min-height: 100vh;
       line-height: 1.45;
+      transition: background .2s, color .2s;
     }
 
     button, input, select { font: inherit; color: inherit; }
@@ -40,7 +102,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
     }
 
     .hidden { display: none !important; }
@@ -60,31 +122,41 @@
       cursor: pointer;
       transition: transform .08s, background .15s, border-color .15s, opacity .15s;
     }
-    .btn:hover:not(:disabled) { background: #22324d; border-color: #3b527a; }
+    .btn:hover:not(:disabled) { filter: brightness(1.1); border-color: var(--accent); }
     .btn:active:not(:disabled) { transform: scale(0.98); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn-primary { background: #0284c7; border-color: #38bdf8; color: #fff; }
-    .btn-primary:hover:not(:disabled) { background: #0369a1; }
+    .btn-primary:hover:not(:disabled) { background: #0369a1; filter: none; }
     .btn-success { background: #15803d; border-color: #22c55e; color: #fff; }
-    .btn-success:hover:not(:disabled) { background: #166534; }
+    .btn-success:hover:not(:disabled) { background: #166534; filter: none; }
     .btn-danger { background: #b91c1c; border-color: #ef4444; color: #fff; }
-    .btn-danger:hover:not(:disabled) { background: #991b1b; }
+    .btn-danger:hover:not(:disabled) { background: #991b1b; filter: none; }
     .btn-warn { background: #b45309; border-color: #f59e0b; color: #fff; }
-    .btn-warn:hover:not(:disabled) { background: #92400e; }
+    .btn-warn:hover:not(:disabled) { background: #92400e; filter: none; }
     .btn-purple { background: #6b21a8; border-color: #a855f7; color: #fff; }
-    .btn-purple:hover:not(:disabled) { background: #581c87; }
+    .btn-purple:hover:not(:disabled) { background: #581c87; filter: none; }
     .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 7px; }
 
     .input {
       width: 100%;
       padding: 9px 12px;
-      background: #0d1523;
+      background: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       outline: none;
     }
     .input:focus { border-color: var(--accent); }
     .input-sm { padding: 6px 9px; font-size: 0.8rem; }
+
+    .style-select {
+      padding: 5px 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
 
     .badge {
       display: inline-flex;
@@ -97,16 +169,16 @@
       background: var(--panel-2);
       border: 1px solid var(--border);
     }
-    .badge-ap { background: rgba(56,189,248,0.16); border-color: #38bdf8; color: #7dd3fc; }
-    .badge-gm { background: rgba(245,158,11,0.16); border-color: #f59e0b; color: #fcd34d; }
-    .badge-dead { background: rgba(168,85,247,0.16); border-color: #a855f7; color: #d8b4fe; }
-    .badge-danger { background: rgba(239,68,68,0.16); border-color: #ef4444; color: #fca5a5; }
-    .badge-ok { background: rgba(34,197,94,0.16); border-color: #22c55e; color: #86efac; }
-    .badge-clock { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.5); color: #bae6fd; font-variant-numeric: tabular-nums; }
+    .badge-ap { background: rgba(56,189,248,0.16); border-color: #38bdf8; color: var(--accent); }
+    .badge-gm { background: rgba(245,158,11,0.16); border-color: #f59e0b; color: #d97706; }
+    .badge-dead { background: rgba(168,85,247,0.16); border-color: #a855f7; color: #c084fc; }
+    .badge-danger { background: rgba(239,68,68,0.16); border-color: #ef4444; color: #f87171; }
+    .badge-ok { background: rgba(34,197,94,0.16); border-color: #22c55e; color: var(--accent-2); }
+    .badge-clock { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.5); color: var(--text); font-variant-numeric: tabular-nums; }
     .badge-bounty {
       background: rgba(245,158,11,0.2);
       border-color: #f59e0b;
-      color: #fde68a;
+      color: #f59e0b;
       padding: 2px 7px;
       font-size: 0.72rem;
     }
@@ -114,7 +186,7 @@
     .config-banner {
       background: rgba(245,158,11,0.14);
       border: 1px solid var(--warn);
-      color: #fde68a;
+      color: var(--text);
       border-radius: var(--radius);
       padding: 14px 16px;
       margin-bottom: 16px;
@@ -154,7 +226,7 @@
 
     .color-input {
       width: 42px; height: 38px; padding: 2px;
-      background: #0d1523; border: 1px solid var(--border);
+      background: var(--input-bg); border: 1px solid var(--border);
       border-radius: 8px; cursor: pointer;
     }
 
@@ -196,18 +268,18 @@
 
     .tile {
       position: relative; aspect-ratio: 1 / 1; min-width: 48px;
-      background: #0e1726; border: 1px solid #1e2d45; border-radius: 8px;
+      background: var(--tile-bg); border: 1px solid var(--tile-border); border-radius: 8px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       cursor: pointer; transition: background .12s, border-color .12s, transform .08s; padding: 2px;
     }
-    .tile:hover { border-color: #4b658f; background: #142238; }
-    .tile.in-range { background: rgba(56, 189, 248, 0.10); border-color: rgba(56, 189, 248, 0.42); }
+    .tile:hover { border-color: var(--accent); background: var(--tile-hover); }
+    .tile.in-range { background: rgba(56, 189, 248, 0.11); border-color: rgba(56, 189, 248, 0.45); }
     .tile.can-move { background: rgba(34, 197, 94, 0.18); border-color: #22c55e; box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.25); }
     .tile.can-move:hover { background: rgba(34, 197, 94, 0.34); }
     .tile.can-shoot { background: rgba(239, 68, 68, 0.22); border-color: #ef4444; box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.35); }
     .tile.selected { outline: 2px solid #facc15; outline-offset: -2px; z-index: 2; }
-    .tile.is-me { box-shadow: inset 0 0 0 2px #38bdf8; }
-    .tile.has-bounty { border-color: rgba(245, 158, 11, 0.78); }
+    .tile.is-me { box-shadow: inset 0 0 0 2px var(--accent); }
+    .tile.has-bounty { border-color: rgba(245, 158, 11, 0.82); }
 
     .tank-sprite-wrap {
       position: relative;
@@ -216,15 +288,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.65));
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));
     }
-    .tank-sprite-wrap.dead {
-      opacity: 0.65;
-    }
-    .tank-sprite-svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
+    .tank-sprite-wrap.dead { opacity: 0.72; }
+    .tank-sprite-svg { width: 100%; height: 100%; overflow: visible; }
+    .tank-turret-rot {
+      transform-origin: 24px 20px;
+      transition: transform .18s ease-out;
     }
     .tank-initials {
       position: absolute;
@@ -243,7 +313,7 @@
       font-size: 0.64rem;
       font-weight: 700;
       margin-top: 1px;
-      color: #fda4af;
+      color: #fb7185;
       line-height: 1;
       white-space: nowrap;
     }
@@ -253,6 +323,7 @@
       right: -6px;
       font-size: 0.68rem;
       filter: drop-shadow(0 1px 2px #000);
+      z-index: 2;
     }
     .bounty-pip {
       position: absolute;
@@ -287,8 +358,8 @@
     }
     .action-panel h3 { font-size: 0.95rem; margin-bottom: 8px; }
     .cmd-block {
-      background: #0e1624;
-      border: 1px solid #1f2e47;
+      background: var(--sub-bg);
+      border: 1px solid var(--tile-border);
       border-radius: 8px;
       padding: 10px;
       margin-bottom: 9px;
@@ -307,16 +378,16 @@
 
     .player-item {
       display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      padding: 9px 10px; border-radius: 9px; background: #0f1726;
-      border: 1px solid #1f2e47; margin-bottom: 7px; cursor: pointer;
+      padding: 9px 10px; border-radius: 9px; background: var(--item-bg);
+      border: 1px solid var(--tile-border); margin-bottom: 7px; cursor: pointer;
     }
-    .player-item:hover { border-color: #3a537d; }
-    .player-item.dead { opacity: 0.6; }
+    .player-item:hover { border-color: var(--accent); }
+    .player-item.dead { opacity: 0.65; }
     .dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.4); }
 
     .log-list { max-height: 440px; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; padding-right: 4px; }
     .log-item {
-      background: #0e1624; border: 1px solid #1e2d45; border-left: 3px solid var(--accent);
+      background: var(--sub-bg); border: 1px solid var(--tile-border); border-left: 3px solid var(--accent);
       border-radius: 7px; padding: 8px 10px; font-size: 0.85rem;
     }
     .log-item.kill, .log-item.shoot { border-left-color: var(--danger); }
@@ -327,16 +398,16 @@
 
     .link-row {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 8px; background: #0e1624; border: 1px solid #1f2e47;
+      padding: 8px; background: var(--sub-bg); border: 1px solid var(--tile-border);
       border-radius: 8px; margin-bottom: 6px; font-size: 0.85rem;
     }
     .gm-player-card {
-      padding: 9px; background: #0e1624; border: 1px solid #1f2e47;
+      padding: 9px; background: var(--sub-bg); border: 1px solid var(--tile-border);
       border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem;
     }
     .gm-discord-row {
       display: flex; gap: 6px; align-items: center; margin-top: 7px;
-      padding-top: 7px; border-top: 1px dashed #1f2e47;
+      padding-top: 7px; border-top: 1px dashed var(--tile-border);
     }
     .sub-divider {
       margin-top: 10px;
@@ -346,7 +417,7 @@
 
     .toast {
       position: fixed; bottom: 20px; right: 20px; max-width: 380px;
-      background: #102136; border: 1px solid var(--accent); color: var(--text);
+      background: #102136; border: 1px solid var(--accent); color: #e6edf7;
       padding: 12px 16px; border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.45);
       z-index: 9999; font-size: 0.9rem; font-weight: 600; animation: fadein .18s ease-out;
     }
@@ -355,8 +426,8 @@
     @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     .prize-bar {
-      display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.78rem; color: #fde68a;
-      background: rgba(245,158,11,0.09); border: 1px solid rgba(245,158,11,0.3);
+      display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.78rem; color: var(--text);
+      background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.38);
       padding: 7px 11px; border-radius: 8px; margin-bottom: 12px;
     }
   </style>
@@ -374,6 +445,21 @@
         <div class="title-block">
           <h1>🛡️ Tank Turn Tactics — Online</h1>
           <p class="muted">Distanza di Manhattan · AP Segreti · Taglie · Sync Ruoli Discord</p>
+        </div>
+        <div class="row">
+          <label class="muted" style="font-size:0.78rem;">Tema:</label>
+          <select id="themeSelectLobby" class="style-select" onchange="setTheme(this.value)">
+            <option value="dark">🌙 Notturno</option>
+            <option value="desert">🏜️ Deserto</option>
+            <option value="arctic">❄️ Artico</option>
+            <option value="paper">📄 Carta</option>
+          </select>
+          <label class="muted" style="font-size:0.78rem;">Carro:</label>
+          <select id="hullSelectLobby" class="style-select" onchange="setHullStyle(this.value)">
+            <option value="mbt">🚜 Pesante</option>
+            <option value="td">🎯 Cacciacarri</option>
+            <option value="light">⚡ Leggero</option>
+          </select>
         </div>
       </div>
 
@@ -483,6 +569,17 @@
           <div id="subMeta" class="submeta"></div>
         </div>
         <div class="row">
+          <select id="themeSelectGame" class="style-select" title="Tema grafico" onchange="setTheme(this.value)">
+            <option value="dark">🌙 Notturno</option>
+            <option value="desert">🏜️ Deserto</option>
+            <option value="arctic">❄️ Artico</option>
+            <option value="paper">📄 Carta</option>
+          </select>
+          <select id="hullSelectGame" class="style-select" title="Sagoma carri" onchange="setHullStyle(this.value)">
+            <option value="mbt">🚜 Pesante</option>
+            <option value="td">🎯 Cacciacarri</option>
+            <option value="light">⚡ Leggero</option>
+          </select>
           <span id="roleBadge" class="badge">👁️ Spettatore</span>
           <button class="btn btn-sm" onclick="refreshAll()">🔄 Aggiorna</button>
           <a class="btn btn-sm" href="?" style="text-decoration:none;">🏠 Lobby</a>
@@ -577,7 +674,10 @@
       selectedPlayerId: null,
       activeTab: "players",
       gmRevealAp: false,
-      busy: false
+      busy: false,
+      theme: "dark",
+      hullStyle: "mbt",
+      tankAngles: {}
     };
     let setupPlayers = [
       { name: "Giocatore 1", color: DEFAULT_COLORS[0], discord_user_id: "" },
@@ -591,34 +691,96 @@
     let refreshTimer = null;
     let countdownInterval = null;
     let lastAutoRefreshForTs = null;
+    let prevPlayerCoords = new Map();
 
     // =========================================================================
-    // UTILITY & SPRITE CARRI ARMATI
+    // TEMA, SPRITE & ORIENTAMENTO CANNONE
     // =========================================================================
-    function esc(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+    function loadAppearancePrefs() {
+      try {
+        const t = localStorage.getItem("ttt_theme");
+        const h = localStorage.getItem("ttt_hull_style");
+        if (["dark", "desert", "arctic", "paper"].includes(t)) state.theme = t;
+        if (["mbt", "td", "light"].includes(h)) state.hullStyle = h;
+      } catch {}
+      applyAppearancePrefs();
     }
 
-    function formatLogMessage(msg) {
-      return esc(msg).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    function applyAppearancePrefs() {
+      if (state.theme === "dark") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        document.documentElement.setAttribute("data-theme", state.theme);
+      }
+      ["themeSelectLobby", "themeSelectGame"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = state.theme;
+      });
+      ["hullSelectLobby", "hullSelectGame"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = state.hullStyle;
+      });
     }
 
-    function coordLabel(x, y) { return String.fromCharCode(65 + x) + (y + 1); }
-    function manhattan(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
+    function setTheme(theme) {
+      if (!["dark", "desert", "arctic", "paper"].includes(theme)) return;
+      state.theme = theme;
+      try { localStorage.setItem("ttt_theme", theme); } catch {}
+      applyAppearancePrefs();
+    }
 
-    function initials(name) {
-      const parts = String(name || "?").trim().split(/\s+/);
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return parts[0].slice(0, 2).toUpperCase();
+    function setHullStyle(hull) {
+      if (!["mbt", "td", "light"].includes(hull)) return;
+      state.hullStyle = hull;
+      try { localStorage.setItem("ttt_hull_style", hull); } catch {}
+      applyAppearancePrefs();
+      if (state.game) {
+        renderBoard();
+        renderContextPanel();
+        renderPlayersTab();
+      }
+    }
+
+    function angleBetweenCoords(fromX, fromY, toX, toY) {
+      const dx = toX - fromX;
+      const dy = toY - fromY;
+      if (dx === 0 && dy === 0) return null;
+      return Math.atan2(dy, dx) * (180 / Math.PI);
+    }
+
+    function updateTankAnglesFromPlayers(newPlayers) {
+      const nextMap = new Map();
+      for (const p of newPlayers) {
+        nextMap.set(p.id, { x: p.x, y: p.y });
+        const prev = prevPlayerCoords.get(p.id);
+        if (prev && (prev.x !== p.x || prev.y !== p.y)) {
+          const deg = angleBetweenCoords(prev.x, prev.y, p.x, p.y);
+          if (deg !== null) state.tankAngles[p.id] = deg;
+        } else if (state.tankAngles[p.id] === undefined) {
+          const fallbackAngles = [0, 90, 180, -90];
+          const hash = p.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+          state.tankAngles[p.id] = fallbackAngles[hash % fallbackAngles.length];
+        }
+      }
+      prevPlayerCoords = nextMap;
+    }
+
+    function getTurretAngle(player) {
+      const me = getMe();
+      if (me && player.id === me.id && state.selectedPlayerId && state.selectedPlayerId !== me.id) {
+        const target = state.players.find(p => p.id === state.selectedPlayerId);
+        if (target) {
+          const deg = angleBetweenCoords(player.x, player.y, target.x, target.y);
+          if (deg !== null) return deg;
+        }
+      }
+      return state.tankAngles[player.id] ?? 0;
     }
 
     function renderTankSprite(player, isDead = false) {
       const baseColor = esc(player.color || "#3b82f6");
+      const angle = getTurretAngle(player);
+
       if (isDead) {
         return `
           <svg class="tank-sprite-svg" viewBox="0 0 48 40" aria-hidden="true">
@@ -631,12 +793,40 @@
           </svg>
         `;
       }
+
+      if (state.hullStyle === "td") {
+        return `
+          <svg class="tank-sprite-svg" viewBox="0 0 48 40" aria-hidden="true">
+            <rect x="3" y="5" width="41" height="6.8" rx="2.2" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+            <rect x="3" y="28.2" width="41" height="6.8" rx="2.2" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+            <polygon points="7,10 38,12 41,20 38,28 7,30" fill="${baseColor}" stroke="rgba(255,255,255,0.45)" stroke-width="1.3"/>
+            <g class="tank-turret-rot" style="transform: rotate(${angle}deg);">
+              <rect x="25" y="17.2" width="21" height="5.6" rx="1.6" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/>
+              <rect x="42.5" y="15.8" width="4" height="8.4" rx="1" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
+              <polygon points="15,13 29,15 29,25 15,27" fill="${baseColor}" stroke="rgba(255,255,255,0.65)" stroke-width="1.3"/>
+            </g>
+          </svg>
+        `;
+      }
+
+      if (state.hullStyle === "light") {
+        return `
+          <svg class="tank-sprite-svg" viewBox="0 0 48 40" aria-hidden="true">
+            <rect x="7" y="7" width="34" height="6" rx="2" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.1"/>
+            <rect x="7" y="27" width="34" height="6" rx="2" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.1"/>
+            <rect x="11" y="11.5" width="24" height="17" rx="4.5" fill="${baseColor}" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+            <g class="tank-turret-rot" style="transform: rotate(${angle}deg);">
+              <rect x="27" y="18.2" width="15" height="3.6" rx="1.4" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.1"/>
+              <circle cx="23" cy="20" r="6.8" fill="${baseColor}" stroke="rgba(255,255,255,0.65)" stroke-width="1.3"/>
+            </g>
+          </svg>
+        `;
+      }
+
       return `
         <svg class="tank-sprite-svg" viewBox="0 0 48 40" aria-hidden="true">
-          <!-- Cingoli -->
           <rect x="4" y="4" width="40" height="7.5" rx="2.5" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
           <rect x="4" y="28.5" width="40" height="7.5" rx="2.5" fill="#18202c" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
-          <!-- Tacchette cingoli -->
           <line x1="11" y1="4.5" x2="11" y2="11" stroke="#475569" stroke-width="1.4"/>
           <line x1="19" y1="4.5" x2="19" y2="11" stroke="#475569" stroke-width="1.4"/>
           <line x1="27" y1="4.5" x2="27" y2="11" stroke="#475569" stroke-width="1.4"/>
@@ -645,15 +835,40 @@
           <line x1="19" y1="29" x2="19" y2="35.5" stroke="#475569" stroke-width="1.4"/>
           <line x1="27" y1="29" x2="27" y2="35.5" stroke="#475569" stroke-width="1.4"/>
           <line x1="35" y1="29" x2="35" y2="35.5" stroke="#475569" stroke-width="1.4"/>
-          <!-- Scafo -->
           <rect x="8.5" y="9.5" width="29" height="21" rx="4.5" fill="${baseColor}" stroke="rgba(255,255,255,0.45)" stroke-width="1.3"/>
-          <!-- Cannone -->
-          <rect x="27" y="17.5" width="17.5" height="5" rx="1.8" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
-          <rect x="41.5" y="16.5" width="3.5" height="7" rx="1" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
-          <!-- Torretta -->
-          <circle cx="24" cy="20" r="8.2" fill="${baseColor}" stroke="rgba(255,255,255,0.65)" stroke-width="1.4"/>
+          <g class="tank-turret-rot" style="transform: rotate(${angle}deg);">
+            <rect x="27" y="17.5" width="17.5" height="5" rx="1.8" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+            <rect x="41.5" y="16.5" width="3.5" height="7" rx="1" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
+            <circle cx="24" cy="20" r="8.2" fill="${baseColor}" stroke="rgba(255,255,255,0.65)" stroke-width="1.4"/>
+          </g>
         </svg>
       `;
+    }
+
+    // =========================================================================
+    // UTILITY
+    // =========================================================================
+    function esc(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatLogMessage(msg) {
+      const cleaned = String(msg ?? "").replace(/\\([*+])/g, "$1");
+      return esc(cleaned).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    }
+
+    function coordLabel(x, y) { return String.fromCharCode(65 + x) + (y + 1); }
+    function manhattan(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
+
+    function initials(name) {
+      const parts = String(name || "?").trim().split(/\s+/);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return parts[0].slice(0, 2).toUpperCase();
     }
 
     function isValidDiscordId(val) {
@@ -749,6 +964,8 @@
     // INIT
     // =========================================================================
     window.addEventListener("DOMContentLoaded", async () => {
+      loadAppearancePrefs();
+
       const configured =
         SUPABASE_URL.startsWith("https://") &&
         !SUPABASE_URL.includes("INCOLLA_QUI") &&
@@ -934,6 +1151,7 @@
 
       state.game = gameRes.data;
       state.players = playersRes.data || [];
+      updateTankAnglesFromPlayers(state.players);
       state.hearts = heartsRes.data || [];
       state.logs = logsRes.data || [];
       state.secret = (secretRes && secretRes.data) ? secretRes.data : { role: "spectator" };
@@ -1172,11 +1390,19 @@
 
       if (me && me.hearts > 0 && state.game.status === "active" && state.mode === "move") {
         const d = Math.abs(x - me.x) + Math.abs(y - me.y);
-        if (d === 1 && !p) { await doMove(x, y); return; }
+        if (d === 1 && !p) {
+          const deg = angleBetweenCoords(me.x, me.y, x, y);
+          if (deg !== null) state.tankAngles[me.id] = deg;
+          await doMove(x, y);
+          return;
+        }
       }
 
       if (me && me.hearts > 0 && state.game.status === "active" && state.mode === "shoot" && p && p.id !== me.id && p.hearts > 0) {
         if (manhattan(me, p) <= me.range) {
+          const deg = angleBetweenCoords(me.x, me.y, p.x, p.y);
+          if (deg !== null) state.tankAngles[me.id] = deg;
+          renderBoard();
           if (confirm(`Vuoi sparare a ${p.name} per 1 AP? (Scenderà a ${p.hearts - 1} ❤️)`)) {
             await doShoot(p.id);
           }
@@ -1247,7 +1473,6 @@
             <span class="badge badge-ap">🔒 ${ap} AP · ❤️ ${me.hearts} · 🔭 ${me.range}</span>
           </div>
 
-          <!-- 1. Movimento e Fuoco -->
           <div class="cmd-block">
             <div class="cmd-title"><span>1. Movimento &amp; Fuoco (1 AP)</span></div>
             <div class="row" style="margin-bottom:8px;">
@@ -1271,7 +1496,6 @@
             </div>
           </div>
 
-          <!-- 2. Potenziamenti -->
           <div class="cmd-block">
             <div class="cmd-title"><span>2. Potenziamenti (3 AP)</span></div>
             <div class="row">
@@ -1284,7 +1508,6 @@
             </div>
           </div>
 
-          <!-- 3. Scambi e Resurrezione -->
           <div class="cmd-block">
             <div class="cmd-title"><span>3. Scambi nel Raggio (d ≤ ${me.range})</span></div>
             <select id="cmdGiftTarget" class="input input-sm" style="margin-bottom:7px;" ${inRangePlayers.length === 0 ? "disabled" : ""}>
@@ -1309,7 +1532,6 @@
             </div>
           </div>
 
-          <!-- 4. Taglie Anonime -->
           <div class="cmd-block">
             <div class="cmd-title"><span>4. Taglia Anonima (qualunque distanza)</span></div>
             <div class="row">
@@ -1634,6 +1856,12 @@
     async function confirmShoot(targetId) {
       const target = state.players.find(p => p.id === targetId);
       if (!target) return;
+      const me = getMe();
+      if (me) {
+        const deg = angleBetweenCoords(me.x, me.y, target.x, target.y);
+        if (deg !== null) state.tankAngles[me.id] = deg;
+        renderBoard();
+      }
       if (!confirm(`Sparare a ${target.name} per 1 AP? (Scenderà a ${target.hearts - 1} ❤️)`)) return;
       await doShoot(targetId);
     }
