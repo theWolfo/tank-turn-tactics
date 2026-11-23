@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tank Turn Tactics — Multiplayer</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0b111b;
+      --panel: #131c2b;
+      --panel-2: #192438;
+      --border: #26354f;
+      --text: #e6edf7;
+      --muted: #8ea0bc;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --purple: #a855f7;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #132035 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    button, input, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+    }
+
+    .hidden { display: none !important; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform .08s, background .15s, border-color .15s, opacity .15s;
+    }
+    .btn:hover:not(:disabled) { background: #22324d; border-color: #3b527a; }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: #0284c7; border-color: #38bdf8; color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: #0369a1; }
+    .btn-success { background: #15803d; border-color: #22c55e; color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #166534; }
+    .btn-danger { background: #b91c1c; border-color: #ef4444; color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #991b1b; }
+    .btn-warn { background: #b45309; border-color: #f59e0b; color: #fff; }
+    .btn-warn:hover:not(:disabled) { background: #92400e; }
+    .btn-purple { background: #6b21a8; border-color: #a855f7; color: #fff; }
+    .btn-purple:hover:not(:disabled) { background: #581c87; }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 7px; }
+
+    .input {
+      width: 100%;
+      padding: 9px 12px;
+      background: #0d1523;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+    }
+    .input:focus { border-color: var(--accent); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+    .badge-ap { background: rgba(56,189,248,0.16); border-color: #38bdf8; color: #7dd3fc; }
+    .badge-gm { background: rgba(245,158,11,0.16); border-color: #f59e0b; color: #fcd34d; }
+    .badge-dead { background: rgba(168,85,247,0.16); border-color: #a855f7; color: #d8b4fe; }
+    .badge-danger { background: rgba(239,68,68,0.16); border-color: #ef4444; color: #fca5a5; }
+    .badge-ok { background: rgba(34,197,94,0.16); border-color: #22c55e; color: #86efac; }
+
+    /* Config Warning */
+    .config-banner {
+      background: rgba(245,158,11,0.14);
+      border: 1px solid var(--warn);
+      color: #fde68a;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    /* Lobby */
+    .lobby-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) { .lobby-grid { grid-template-columns: 1fr; } }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .row > .grow { flex: 1; min-width: 120px; }
+
+    .player-setup-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 38px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .color-input {
+      width: 42px;
+      height: 38px;
+      padding: 2px;
+      background: #0d1523;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Game Header */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .title-block h1 { font-size: 1.35rem; letter-spacing: 0.3px; }
+    .submeta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+
+    /* Main Game Layout */
+    .game-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      .game-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Tactical Map */
+    .board-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .mode-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mode-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 0 0 2px rgba(56,189,248,0.28);
+    }
+
+    .board-scroll {
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .board-grid {
+      display: grid;
+      gap: 4px;
+      width: max-content;
+      min-width: 100%;
+      user-select: none;
+    }
+
+    .coord-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      min-height: 22px;
+    }
+
+    .tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      min-width: 44px;
+      background: #0e1726;
+      border: 1px solid #1e2d45;
+      border-radius: 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .12s, border-color .12s, transform .08s;
+      padding: 2px;
+    }
+    .tile:hover { border-color: #4b658f; background: #142238; }
+
+    .tile.in-range {
+      background: rgba(56, 189, 248, 0.10);
+      border-color: rgba(56, 189, 248, 0.42);
+    }
+    .tile.can-move {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: #22c55e;
+      box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.25);
+    }
+    .tile.can-move:hover { background: rgba(34, 197, 94, 0.34); }
+
+    .tile.can-shoot {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: #ef4444;
+      box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.35);
+    }
+    .tile.selected {
+      outline: 2px solid #facc15;
+      outline-offset: -2px;
+      z-index: 2;
+    }
+    .tile.is-me {
+      box-shadow: inset 0 0 0 2px #38bdf8;
+    }
+
+    .tank-token {
+      width: 72%;
+      height: 54%;
+      min-height: 20px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.76rem;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.75);
+      border: 1px solid rgba(255,255,255,0.28);
+      position: relative;
+    }
+    .tank-token.dead {
+      opacity: 0.45;
+      filter: grayscale(0.8);
+      border-style: dashed;
+    }
+    .tank-hearts {
+      font-size: 0.66rem;
+      font-weight: 700;
+      margin-top: 2px;
+      color: #fda4af;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .haunt-pip {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 0.7rem;
+      filter: drop-shadow(0 1px 2px #000);
+    }
+    .heart-drop {
+      font-size: 1.25rem;
+      animation: pulse 1.6s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.18); }
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: var(--panel-2);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    /* Action Box */
+    .action-panel {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .action-panel h3 { font-size: 0.95rem; margin-bottom: 8px; }
+    .muted { color: var(--muted); font-size: 0.85rem; }
+
+    /* Player list */
+    .player-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 9px;
+      background: #0f1726;
+      border: 1px solid #1f2e47;
+      margin-bottom: 7px;
+      cursor: pointer;
+    }
+    .player-item:hover { border-color: #3a537d; }
+    .player-item.dead { opacity: 0.6; }
+    .dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    /* Logs */
+    .log-list {
+      max-height: 440px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding-right: 4px;
+    }
+    .log-item {
+      background: #0e1624;
+      border: 1px solid #1e2d45;
+      border-left: 3px solid var(--accent);
+      border-radius: 7px;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+    }
+    .log-item.kill, .log-item.shoot { border-left-color: var(--danger); }
+    .log-item.heart, .log-item.revive { border-left-color: #ec4899; }
+    .log-item.day { border-left-color: var(--warn); }
+    .log-item.gift, .log-item.upgrade { border-left-color: var(--accent-2); }
+    .log-time { font-size: 0.72rem; color: var(--muted); margin-bottom: 2px; }
+
+    /* GM Links table */
+    .link-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px;
+      background: #0e1624;
+      border: 1px solid #1f2e47;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      max-width: 380px;
+      background: #102136;
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+      z-index: 9999;
+      font-size: 0.9rem;
+      font-weight: 600;
+      animation: fadein .18s ease-out;
+    }
+    .toast.error { border-color: var(--danger); background: #2b1217; color: #fecaca; }
+    .toast.success { border-color: var(--accent-2); background: #0f291c; color: #bbf7d0; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .prize-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+      color: #fde68a;
+      background: rgba(245,158,11,0.09);
+      border: 1px solid rgba(245,158,11,0.3);
+      padding: 7px 11px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Avviso se mancano le chiavi Supabase -->
+    <div id="configBanner" class="config-banner hidden">
+      <strong>⚠️ Configurazione Supabase mancante:</strong> apri <code>index.html</code> e inserisci il tuo
+      <code>SUPABASE_URL</code> e la tua <code>SUPABASE_KEY</code> (Publishable / anon key) nelle prime righe dello script.
+    </div>
+
+    <!-- ==================== VISTA 1: LOBBY / CREAZIONE GM ==================== -->
+    <div id="lobbyView" class="hidden">
+      <div class="topbar">
+        <div class="title-block">
+          <h1>🛡️ Tank Turn Tactics — Online</h1>
+          <p class="muted">Distanza di Manhattan · AP Segreti lato server · Realtime su Supabase</p>
+        </div>
+      </div>
+
+      <div class="lobby-grid">
+        <div class="card">
+          <h2 style="margin-bottom:12px;">⚙️ Crea Nuova Partita (Game Master)</h2>
+
+          <div class="field">
+            <label>Nome della partita</label>
+            <input id="cfgName" class="input" type="text" value="Tank Turn Tactics" maxlength="50" />
+          </div>
+
+          <div class="field">
+            <label>Dimensioni della mappa (da 4×4 a 20×20)</label>
+            <div class="row" style="margin-bottom:8px;">
+              <div class="grow">
+                <input id="cfgWidth" class="input" type="number" min="4" max="20" value="8" />
+              </div>
+              <span class="muted">×</span>
+              <div class="grow">
+                <input id="cfgHeight" class="input" type="number" min="4" max="20" value="8" />
+              </div>
+            </div>
+            <div class="row">
+              <button type="button" class="btn btn-sm" onclick="setGridPreset(6,6)">6×6 (Stretta)</button>
+              <button type="button" class="btn btn-sm" onclick="setGridPreset(8,8)">8×8 (Classica)</button>
+              <button type="button" class="btn btn-sm" onclick="setGridPreset(10,10)">10×10 (Grande)</button>
+              <button type="button" class="btn btn-sm" onclick="setGridPreset(12,12)">12×12 (Epica)</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Discord Webhook (opzionale — Bollettino di Guerra pubblico)</label>
+            <input id="cfgWebhook" class="input" type="url" placeholder="https://discord.com/api/webhooks/..." />
+          </div>
+
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);">
+              <input id="cfgPrizes" type="checkbox" checked />
+              Mostra montepremi classico (1° $30 · 2° $20 · 3° $15 · 4° $10 · First Blood $5)
+            </label>
+          </div>
+
+          <div class="field">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px;">
+              <label style="margin:0;">Giocatori (minimo 2)</label>
+              <button type="button" class="btn btn-sm" onclick="addSetupPlayer()">+ Aggiungi Giocatore</button>
+            </div>
+            <div id="setupPlayersList"></div>
+          </div>
+
+          <button id="createGameBtn" class="btn btn-primary" style="width:100%;padding:12px;" onclick="createGame()">
+            🚀 Avvia Partita e Genera i Link Segreti
+          </button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <h3 style="margin-bottom:8px;">🔗 Apri una partita esistente</h3>
+            <p class="muted" style="margin-bottom:10px;">
+              Incolla il link completo che ti ha mandato il Game Master oppure solo l'ID partita per guardare come spettatore.
+            </p>
+            <div class="row">
+              <input id="joinInput" class="input grow" placeholder="Incolla link o UUID partita..." />
+              <button class="btn btn-primary" onclick="joinFromInput()">Apri</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom:8px;">🕒 Partite recenti su questo dispositivo</h3>
+            <div id="recentGamesList" class="muted">Nessuna partita salvata localmente.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VISTA 2: PLANCIA DI GIOCO ==================== -->
+    <div id="gameView" class="hidden">
+      <div class="topbar card" style="padding:12px 16px;">
+        <div class="title-block">
+          <div class="row" style="gap:10px;">
+            <h1 id="gameTitle">Tank Turn Tactics</h1>
+            <span id="dayBadge" class="badge">☀️ Giorno 0</span>
+            <span id="statusBadge" class="badge badge-ok">Attiva</span>
+          </div>
+          <div id="subMeta" class="submeta"></div>
+        </div>
+        <div class="row">
+          <span id="roleBadge" class="badge">👁️ Spettatore</span>
+          <button class="btn btn-sm" onclick="refreshAll()">🔄 Aggiorna</button>
+          <a class="btn btn-sm" href="?" style="text-decoration:none;">🏠 Lobby</a>
+        </div>
+      </div>
+
+      <div id="prizeBar" class="prize-bar hidden"></div>
+
+      <div class="game-layout">
+        <!-- COLONNA SINISTRA: MAPPA -->
+        <div class="card">
+          <div class="board-toolbar">
+            <div id="modeButtons" class="mode-group"></div>
+            <div class="row">
+              <label class="muted" style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" id="toggleRange" checked onchange="renderBoard()" />
+                Mostra raggio Manhattan
+              </label>
+            </div>
+          </div>
+
+          <div class="board-scroll">
+            <div id="boardGrid" class="board-grid"></div>
+          </div>
+
+          <div id="boardHint" class="muted" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- COLONNA DESTRA: AZIONI, GM, LISTA, LOG -->
+        <div class="card">
+          <!-- Pannello Contestuale Giocatore / Bersaglio -->
+          <div id="contextPanel"></div>
+
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="players" onclick="switchTab('players')">👥 Carri</button>
+            <button class="tab-btn" data-tab="logs" onclick="switchTab('logs')">📜 Bollettino</button>
+            <button id="gmTabBtn" class="tab-btn hidden" data-tab="gm" onclick="switchTab('gm')">👑 Game Master</button>
+            <button class="tab-btn" data-tab="rules" onclick="switchTab('rules')">📖 Regole</button>
+          </div>
+
+          <div id="tab-players"></div>
+          <div id="tab-logs" class="hidden"></div>
+          <div id="tab-gm" class="hidden"></div>
+          <div id="tab-rules" class="hidden">
+            <div class="muted" style="display:flex;flex-direction:column;gap:8px;font-size:0.84rem;">
+              <p><strong>• Inizio:</strong> posizione casuale, 3 ❤️, 0 AP, raggio Manhattan iniziale 2.</p>
+              <p><strong>• Giorno:</strong> ogni giorno lavorativo tutti i sopravvissuti ricevono +1 AP (tranne il giocatore maledetto dalla Giuria dei Morti).</p>
+              <p><strong>• Azioni (in qualsiasi momento):</strong><br/>
+                1. Muovi in una casella ortogonale libera (<strong>1 AP</strong>)<br/>
+                2. Spara a un carro nel tuo raggio Manhattan: toglie 1 ❤️ (<strong>1 AP</strong>)<br/>
+                3. Aggiungi +1 ❤️ (<strong>3 AP</strong>)<br/>
+                4. Potenzia il raggio di +1 (<strong>3 AP</strong>)
+              </p>
+              <p><strong>• Eliminazione:</strong> a 0 ❤️ sei morto, resti sulla mappa come relitto bloccante e <strong>tutti i tuoi AP segreti</strong> passano a chi ti ha ucciso.</p>
+              <p><strong>• Scambi & Resurrezione:</strong> puoi regalare ❤️ o AP a chiunque nel tuo raggio. Donare 1 ❤️ a un relitto lo resuscita con 1 ❤️ e 0 AP.</p>
+              <p><strong>• Giuria & Cuori:</strong> i morti votano chi maledire (<em>haunt</em>) il giorno dopo. Una volta al giorno appare un ❤️ sulla mappa per il primo che ci entra.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastRoot"></div>
+
+  <script>
+    // =========================================================================
+    // 1. CONFIGURAZIONE SUPABASE (INSERISCI QUI I TUOI 2 VALORI!)
+    // =========================================================================
+    const SUPABASE_URL = "https://ghfghizzvyscnaubihpx.supabase.co";       // es. https://abcdefgh.supabase.co
+    const SUPABASE_KEY = "sb_publishable_8gANMmEZXThXXQu3ismTvA_hoS75jHg";   // Publishable key (sb_publishable_...) o anon key
+
+    // =========================================================================
+    // STATO APPLICAZIONE
+    // =========================================================================
+    const DEFAULT_COLORS = [
+      "#ef4444", "#3b82f6", "#22c55e", "#f59e0b",
+      "#a855f7", "#ec4899", "#14b8a6", "#f97316",
+      "#6366f1", "#84cc16", "#06b6d4", "#e11d48"
+    ];
+
+    let sb = null;
+    let gameId = null;
+    let token = null;
+    let state = {
+      game: null,
+      players: [],
+      hearts: [],
+      logs: [],
+      secret: { role: "spectator" },
+      mode: "inspect",          // inspect | move | shoot | gift
+      selectedPlayerId: null,   // bersaglio o carro ispezionato
+      activeTab: "players",
+      gmRevealAp: false,
+      busy: false
+    };
+    let setupPlayers = [
+      { name: "Giocatore 1", color: DEFAULT_COLORS[0] },
+      { name: "Giocatore 2", color: DEFAULT_COLORS[1] },
+      { name: "Giocatore 3", color: DEFAULT_COLORS[2] },
+      { name: "Giocatore 4", color: DEFAULT_COLORS[3] },
+      { name: "Giocatore 5", color: DEFAULT_COLORS[4] },
+      { name: "Giocatore 6", color: DEFAULT_COLORS[5] }
+    ];
+    let realtimeChannel = null;
+    let refreshTimer = null;
+
+    // =========================================================================
+    // UTILITY
+    // =========================================================================
+    function esc(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatLogMessage(msg) {
+      return esc(msg).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    }
+
+    function coordLabel(x, y) {
+      return String.fromCharCode(65 + x) + (y + 1);
+    }
+
+    function manhattan(a, b) {
+      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+
+    function initials(name) {
+      const parts = String(name || "?").trim().split(/\s+/);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    function showToast(message, type = "info") {
+      const root = document.getElementById("toastRoot");
+      const el = document.createElement("div");
+      el.className = "toast " + type;
+      el.textContent = message;
+      root.innerHTML = "";
+      root.appendChild(el);
+      clearTimeout(window.__toastT);
+      window.__toastT = setTimeout(() => { el.remove(); }, 4200);
+    }
+
+    function getBaseUrl() {
+      return window.location.origin + window.location.pathname;
+    }
+
+    function buildLink(gId, tok = null) {
+      const u = new URL(getBaseUrl());
+      u.searchParams.set("game", gId);
+      if (tok) u.searchParams.set("token", tok);
+      return u.toString();
+    }
+
+    async function copyText(text, label = "Link copiato!") {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(label, "success");
+      } catch {
+        prompt("Copia questo link:", text);
+      }
+    }
+
+    function saveRecentGame(entry) {
+      try {
+        const list = JSON.parse(localStorage.getItem("ttt_recent_games") || "[]");
+        const filtered = list.filter(item => !(item.gameId === entry.gameId && item.token === entry.token));
+        filtered.unshift({ ...entry, savedAt: Date.now() });
+        localStorage.setItem("ttt_recent_games", JSON.stringify(filtered.slice(0, 12)));
+      } catch {}
+    }
+
+    function getMe() {
+      if (state.secret.role !== "player") return null;
+      return state.players.find(p => p.id === state.secret.player_id) || null;
+    }
+
+    // =========================================================================
+    // INIT
+    // =========================================================================
+    window.addEventListener("DOMContentLoaded", async () => {
+      const configured =
+        SUPABASE_URL.startsWith("https://") &&
+        !SUPABASE_URL.includes("INCOLLA_QUI") &&
+        SUPABASE_KEY.length > 20 &&
+        !SUPABASE_KEY.includes("INCOLLA_QUI");
+
+      if (!configured) {
+        document.getElementById("configBanner").classList.remove("hidden");
+      } else {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      gameId = params.get("game");
+      token = params.get("token");
+
+      if (gameId) {
+        document.getElementById("gameView").classList.remove("hidden");
+        if (sb) {
+          await refreshAll();
+          subscribeRealtime();
+        }
+      } else {
+        document.getElementById("lobbyView").classList.remove("hidden");
+        renderSetupPlayers();
+        renderRecentGames();
+      }
+    });
+
+    // =========================================================================
+    // LOBBY & CREAZIONE PARTITA
+    // =========================================================================
+    function setGridPreset(w, h) {
+      document.getElementById("cfgWidth").value = w;
+      document.getElementById("cfgHeight").value = h;
+    }
+
+    function addSetupPlayer() {
+      const idx = setupPlayers.length;
+      setupPlayers.push({
+        name: "Giocatore " + (idx + 1),
+        color: DEFAULT_COLORS[idx % DEFAULT_COLORS.length]
+      });
+      renderSetupPlayers();
+    }
+
+    function removeSetupPlayer(idx) {
+      if (setupPlayers.length <= 2) return showToast("Servono almeno 2 giocatori.", "error");
+      setupPlayers.splice(idx, 1);
+      renderSetupPlayers();
+    }
+
+    function renderSetupPlayers() {
+      const box = document.getElementById("setupPlayersList");
+      box.innerHTML = setupPlayers.map((p, i) => `
+        <div class="player-setup-row">
+          <input class="color-input" type="color" value="${esc(p.color)}"
+            onchange="setupPlayers[${i}].color = this.value" />
+          <input class="input" type="text" value="${esc(p.name)}" maxlength="24"
+            oninput="setupPlayers[${i}].name = this.value" placeholder="Nome giocatore" />
+          <button type="button" class="btn btn-sm" onclick="removeSetupPlayer(${i})" title="Rimuovi">✕</button>
+        </div>
+      `).join("");
+    }
+
+    function renderRecentGames() {
+      const el = document.getElementById("recentGamesList");
+      let list = [];
+      try { list = JSON.parse(localStorage.getItem("ttt_recent_games") || "[]"); } catch {}
+      if (!list.length) {
+        el.innerHTML = '<span class="muted">Nessuna partita salvata su questo browser.</span>';
+        return;
+      }
+      el.innerHTML = list.map(item => `
+        <div class="link-row">
+          <div>
+            <strong>${esc(item.name || "Partita")}</strong>
+            <div class="muted" style="font-size:0.76rem;">${esc(item.roleLabel || "Accesso")}</div>
+          </div>
+          <a class="btn btn-sm btn-primary" style="text-decoration:none;" href="${esc(buildLink(item.gameId, item.token))}">Apri</a>
+        </div>
+      `).join("");
+    }
+
+    function joinFromInput() {
+      const raw = document.getElementById("joinInput").value.trim();
+      if (!raw) return;
+      try {
+        if (raw.startsWith("http://") || raw.startsWith("https://")) {
+          const u = new URL(raw);
+          const g = u.searchParams.get("game");
+          const t = u.searchParams.get("token");
+          if (g) {
+            window.location.href = buildLink(g, t);
+            return;
+          }
+        }
+      } catch {}
+      window.location.href = buildLink(raw);
+    }
+
+    async function createGame() {
+      if (!sb) return showToast("Configura prima SUPABASE_URL e SUPABASE_KEY nel file HTML.", "error");
+
+      const name = document.getElementById("cfgName").value.trim() || "Tank Turn Tactics";
+      const width = parseInt(document.getElementById("cfgWidth").value, 10);
+      const height = parseInt(document.getElementById("cfgHeight").value, 10);
+      const webhook = document.getElementById("cfgWebhook").value.trim() || null;
+      const prizes = document.getElementById("cfgPrizes").checked;
+
+      const cleaned = setupPlayers
+        .map(p => ({ name: p.name.trim(), color: p.color }))
+        .filter(p => p.name.length > 0);
+
+      if (cleaned.length < 2) return showToast("Inserisci almeno 2 giocatori con un nome.", "error");
+      if (cleaned.length > width * height) return showToast("Troppi giocatori per questa dimensione di mappa.", "error");
+
+      const btn = document.getElementById("createGameBtn");
+      btn.disabled = true;
+      btn.textContent = "Creazione in corso...";
+
+      const { data, error } = await sb.rpc("ttt_create_game", {
+        p_name: name,
+        p_width: width,
+        p_height: height,
+        p_players: cleaned,
+        p_discord_webhook: webhook,
+        p_prizes_enabled: prizes
+      });
+
+      btn.disabled = false;
+      btn.textContent = "🚀 Avvia Partita e Genera i Link Segreti";
+
+      if (error) {
+        showToast(error.message, "error");
+        return;
+      }
+
+      saveRecentGame({
+        gameId: data.game_id,
+        token: data.gm_token,
+        name,
+        roleLabel: "👑 Game Master"
+      });
+
+      window.location.href = buildLink(data.game_id, data.gm_token);
+    }
+
+    // =========================================================================
+    // SINCRONIZZAZIONE SUPABASE & REALTIME
+    // =========================================================================
+    async function refreshAll() {
+      if (!sb || !gameId) return;
+
+      const [gameRes, playersRes, heartsRes, logsRes, secretRes] = await Promise.all([
+        sb.from("games").select("*").eq("id", gameId).maybeSingle(),
+        sb.from("players").select("*").eq("game_id", gameId).order("created_at", { ascending: true }),
+        sb.from("heart_spawns").select("*").eq("game_id", gameId),
+        sb.from("game_logs").select("*").eq("game_id", gameId).order("id", { ascending: false }).limit(80),
+        token
+          ? sb.rpc("ttt_get_secret_state", { p_game_id: gameId, p_token: token })
+          : Promise.resolve({ data: { role: "spectator" }, error: null })
+      ]);
+
+      if (gameRes.error || !gameRes.data) {
+        showToast("Partita non trovata o ID non valido.", "error");
+        return;
+      }
+
+      state.game = gameRes.data;
+      state.players = playersRes.data || [];
+      state.hearts = heartsRes.data || [];
+      state.logs = logsRes.data || [];
+      state.secret = (secretRes && secretRes.data) ? secretRes.data : { role: "spectator" };
+
+      // Salva nei recenti per non perdere il link personale
+      if (state.secret.role === "gm") {
+        saveRecentGame({ gameId, token, name: state.game.name, roleLabel: "👑 Game Master" });
+        if (state.activeTab === "players" && state.game.day === 0 && !window.__gmOpenedOnce) {
+          window.__gmOpenedOnce = true;
+          state.activeTab = "gm";
+        }
+      } else if (state.secret.role === "player") {
+        const me = getMe();
+        if (me) saveRecentGame({ gameId, token, name: state.game.name, roleLabel: "🚜 " + me.name });
+      }
+
+      renderAll();
+    }
+
+    function scheduleRefresh() {
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => refreshAll(), 180);
+    }
+
+    function subscribeRealtime() {
+      if (realtimeChannel) sb.removeChannel(realtimeChannel);
+      realtimeChannel = sb
+        .channel("ttt-game-" + gameId)
+        .on("postgres_changes", { event: "*", schema: "public", table: "games", filter: `id=eq.${gameId}` }, scheduleRefresh)
+        .on("postgres_changes", { event: "*", schema: "public", table: "players", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+        .on("postgres_changes", { event: "*", schema: "public", table: "heart_spawns", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "game_logs", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+        .subscribe();
+    }
+
+    // =========================================================================
+    // RENDERING INTERFACCIA
+    // =========================================================================
+    function renderAll() {
+      if (!state.game) return;
+      renderHeader();
+      renderModeToolbar();
+      renderBoard();
+      renderContextPanel();
+      renderPlayersTab();
+      renderLogsTab();
+      renderGmTab();
+      applyActiveTab();
+    }
+
+    function renderHeader() {
+      const g = state.game;
+      const aliveCount = state.players.filter(p => p.hearts > 0).length;
+      const haunted = state.players.find(p => p.id === g.haunted_player_id);
+
+      document.getElementById("gameTitle").textContent = g.name;
+      document.getElementById("dayBadge").textContent = "☀️ Giorno " + g.day;
+
+      const statusBadge = document.getElementById("statusBadge");
+      statusBadge.textContent = g.status === "active" ? `Attiva (${aliveCount} vivi)` : "🏆 Conclusa";
+      statusBadge.className = "badge " + (g.status === "active" ? "badge-ok" : "badge-gm");
+
+      const subMeta = [];
+      subMeta.push(`<span class="badge">🗺️ ${g.width}×${g.height} · Manhattan</span>`);
+      if (g.first_blood_killer) {
+        subMeta.push(`<span class="badge badge-danger">🩸 First Blood: ${esc(g.first_blood_killer)}</span>`);
+      }
+      if (haunted) {
+        subMeta.push(`<span class="badge badge-dead">👻 Maledetto oggi: ${esc(haunted.name)}</span>`);
+      }
+      document.getElementById("subMeta").innerHTML = subMeta.join("");
+
+      const roleBadge = document.getElementById("roleBadge");
+      const gmTabBtn = document.getElementById("gmTabBtn");
+
+      if (state.secret.role === "gm") {
+        roleBadge.className = "badge badge-gm";
+        roleBadge.textContent = "👑 Game Master";
+        gmTabBtn.classList.remove("hidden");
+      } else if (state.secret.role === "player") {
+        gmTabBtn.classList.add("hidden");
+        const me = getMe();
+        if (me && me.hearts > 0) {
+          roleBadge.className = "badge badge-ap";
+          roleBadge.textContent = `🚜 ${me.name} · 🔒 ${state.secret.ap} AP · ❤️ ${me.hearts} · 🔭 ${me.range}`;
+        } else if (me) {
+          roleBadge.className = "badge badge-dead";
+          roleBadge.textContent = `👻 ${me.name} (Giuria dei Morti)`;
+        }
+      } else {
+        gmTabBtn.classList.add("hidden");
+        roleBadge.className = "badge";
+        roleBadge.textContent = "👁️ Spettatore";
+      }
+
+      const prizeBar = document.getElementById("prizeBar");
+      if (g.prizes_enabled) {
+        prizeBar.classList.remove("hidden");
+        prizeBar.innerHTML = `
+          <span>🏆 <strong>Montepremi:</strong></span>
+          <span>1° $30</span> · <span>2° $20</span> · <span>3° $15</span> · <span>4° $10</span> ·
+          <span>🩸 First Blood: $5 ${g.first_blood_killer ? `(preso da ${esc(g.first_blood_killer)})` : "(disponibile)"}</span>
+        `;
+      } else {
+        prizeBar.classList.add("hidden");
+      }
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      renderModeToolbar();
+      renderBoard();
+    }
+
+    function renderModeToolbar() {
+      const box = document.getElementById("modeButtons");
+      const hint = document.getElementById("boardHint");
+      const me = getMe();
+
+      if (!me || me.hearts <= 0 || state.game.status !== "active") {
+        box.innerHTML = `<span class="muted">Clicca su un carro armato per ispezionare il suo raggio di Manhattan.</span>`;
+        hint.textContent = me && me.hearts === 0
+          ? "Sei stato eliminato: il tuo relitto resta sulla mappa. Usa il pannello Giuria a destra per votare chi maledire."
+          : "Modalità osservazione.";
+        return;
+      }
+
+      const ap = state.secret.ap;
+      box.innerHTML = `
+        <button class="btn btn-sm mode-btn ${state.mode === "inspect" ? "active" : ""}" onclick="setMode('inspect')">👆 Ispeziona</button>
+        <button class="btn btn-sm mode-btn ${state.mode === "move" ? "active" : ""}" onclick="setMode('move')" ${ap < 1 ? "disabled" : ""}>🚜 Muovi (1 AP)</button>
+        <button class="btn btn-sm mode-btn ${state.mode === "shoot" ? "active" : ""}" onclick="setMode('shoot')" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
+        <button class="btn btn-sm mode-btn ${state.mode === "gift" ? "active" : ""}" onclick="setMode('gift')">🎁 Regala / Resuscita</button>
+      `;
+
+      const hints = {
+        inspect: "Clicca un carro armato sulla mappa per vedere distanza, raggio e opzioni.",
+        move: "Clicca una delle caselle verdi adiacenti (distanza Manhattan = 1) per spostarti.",
+        shoot: "Clicca un nemico evidenziato in rosso nel tuo raggio Manhattan per sparargli (-1 ❤️).",
+        gift: "Clicca un alleato (o un relitto da resuscitare) nel tuo raggio Manhattan per aprire il pannello regali."
+      };
+      hint.textContent = hints[state.mode] || "";
+    }
+
+    function renderBoard() {
+      const g = state.game;
+      const grid = document.getElementById("boardGrid");
+      const me = getMe();
+      const showRange = document.getElementById("toggleRange").checked;
+
+      // Riferimento per mostrare il rombo di portata Manhattan
+      let rangeOrigin = null;
+      if (showRange) {
+        if (state.mode === "shoot" || state.mode === "gift") {
+          rangeOrigin = me;
+        } else if (state.selectedPlayerId) {
+          rangeOrigin = state.players.find(p => p.id === state.selectedPlayerId && p.hearts > 0) || me;
+        } else if (me && me.hearts > 0) {
+          rangeOrigin = me;
+        }
+      }
+
+      const playerMap = new Map();
+      state.players.forEach(p => playerMap.set(`${p.x},${p.y}`, p));
+      const heartSet = new Set(state.hearts.map(h => `${h.x},${h.y}`));
+
+      const colSize = g.width >= 14 ? "42px" : "minmax(46px, 1fr)";
+      grid.style.gridTemplateColumns = `26px repeat(${g.width}, ${colSize})`;
+
+      let html = `<div class="coord-cell"></div>`;
+      for (let x = 0; x < g.width; x++) {
+        html += `<div class="coord-cell">${String.fromCharCode(65 + x)}</div>`;
+      }
+
+      for (let y = 0; y < g.height; y++) {
+        html += `<div class="coord-cell">${y + 1}</div>`;
+        for (let x = 0; x < g.width; x++) {
+          const key = `${x},${y}`;
+          const p = playerMap.get(key);
+          const hasHeart = heartSet.has(key);
+
+          const classes = ["tile"];
+          if (me && me.x === x && me.y === y) classes.push("is-me");
+          if (p && state.selectedPlayerId === p.id) classes.push("selected");
+
+          if (rangeOrigin && rangeOrigin.hearts > 0) {
+            const d = Math.abs(x - rangeOrigin.x) + Math.abs(y - rangeOrigin.y);
+            if (d > 0 && d <= rangeOrigin.range) classes.push("in-range");
+          }
+
+          if (me && me.hearts > 0 && g.status === "active") {
+            const dMe = Math.abs(x - me.x) + Math.abs(y - me.y);
+            if (state.mode === "move" && dMe === 1 && !p && state.secret.ap >= 1) {
+              classes.push("can-move");
+            }
+            if (state.mode === "shoot" && p && p.id !== me.id && p.hearts > 0 && dMe <= me.range && state.secret.ap >= 1) {
+              classes.push("can-shoot");
+            }
+          }
+
+          let inner = "";
+          if (p) {
+            const isDead = p.hearts <= 0;
+            const isHaunted = g.haunted_player_id === p.id;
+            inner = `
+              <div class="tank-token ${isDead ? "dead" : ""}" style="background:${esc(p.color)};" title="${esc(p.name)} (${coordLabel(x, y)})">
+                ${isDead ? "💀" : esc(initials(p.name))}
+                ${isHaunted ? '<span class="haunt-pip" title="Maledetto oggi">👻</span>' : ""}
+              </div>
+              <div class="tank-hearts">${isDead ? "RELITTO" : "❤️" + p.hearts}</div>
+            `;
+          } else if (hasHeart) {
+            inner = `<div class="heart-drop" title="Cuore raccoglibile (+1 ❤️)">❤️</div>`;
+          }
+
+          html += `<div class="${classes.join(" ")}" onclick="onTileClick(${x},${y})" title="${coordLabel(x, y)}">${inner}</div>`;
+        }
+      }
+
+      grid.innerHTML = html;
+    }
+
+    async function onTileClick(x, y) {
+      if (state.busy) return;
+      const p = state.players.find(pl => pl.x === x && pl.y === y);
+      const me = getMe();
+
+      // Movimento rapido
+      if (me && me.hearts > 0 && state.game.status === "active" && state.mode === "move") {
+        const d = Math.abs(x - me.x) + Math.abs(y - me.y);
+        if (d === 1 && !p) {
+          await doMove(x, y);
+          return;
+        }
+      }
+
+      // Sparo rapido
+      if (me && me.hearts > 0 && state.game.status === "active" && state.mode === "shoot" && p && p.id !== me.id && p.hearts > 0) {
+        if (manhattan(me, p) <= me.range) {
+          if (confirm(`Vuoi sparare a ${p.name} per 1 AP? (Scenderà a ${p.hearts - 1} ❤️)`)) {
+            await doShoot(p.id);
+          }
+          return;
+        } else {
+          showToast(`${p.name} è fuori dal tuo raggio Manhattan (${me.range}).`, "error");
+        }
+      }
+
+      // Selezione bersaglio per ispezione / regali
+      if (p) {
+        state.selectedPlayerId = p.id;
+        renderBoard();
+        renderContextPanel();
+      } else {
+        state.selectedPlayerId = null;
+        renderBoard();
+        renderContextPanel();
+      }
+    }
+
+    function renderContextPanel() {
+      const box = document.getElementById("contextPanel");
+      const me = getMe();
+      const target = state.players.find(p => p.id === state.selectedPlayerId);
+      const parts = [];
+
+      // 1. Se giocatore vivo: potenziamenti rapidi (3 AP)
+      if (me && me.hearts > 0 && state.game.status === "active") {
+        const ap = state.secret.ap;
+        parts.push(`
+          <div class="action-panel">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px;">
+              <h3 style="margin:0;">⚡ I tuoi Comandi (${esc(me.name)})</h3>
+              <span class="badge badge-ap">🔒 ${ap} AP segreti</span>
+            </div>
+            <div class="row">
+              <button class="btn btn-sm btn-success grow" onclick="doUpgrade('heart')" ${ap < 3 ? "disabled" : ""}>
+                💖 +1 Cuore (3 AP)
+              </button>
+              <button class="btn btn-sm btn-primary grow" onclick="doUpgrade('range')" ${ap < 3 ? "disabled" : ""}>
+                🔭 +1 Raggio (3 AP)
+              </button>
+            </div>
+          </div>
+        `);
+      }
+
+      // 2. Se giocatore morto: Giuria dei Morti
+      if (me && me.hearts === 0 && state.game.status === "active") {
+        const alive = state.players.filter(p => p.hearts > 0);
+        const tallyMap = new Map((state.secret.jury_tally || []).map(t => [t.target_id, t.votes]));
+        const myVote = state.secret.jury_vote_target_id;
+
+        parts.push(`
+          <div class="action-panel" style="border-color:var(--purple);">
+            <h3>👻 Giuria dei Morti</h3>
+            <p class="muted" style="margin-bottom:10px;">
+              Vota chi maledire (<em>haunt</em>): domani chi riceve più voti non riceverà +1 AP.
+            </p>
+            ${alive.map(a => {
+              const votes = tallyMap.get(a.id) || 0;
+              const isMine = myVote === a.id;
+              return `
+                <div class="link-row">
+                  <div class="row" style="gap:8px;">
+                    <span class="dot" style="background:${esc(a.color)};"></span>
+                    <strong>${esc(a.name)}</strong>
+                    <span class="muted">(${votes} ${votes === 1 ? "voto" : "voti"})</span>
+                  </div>
+                  <button class="btn btn-sm ${isMine ? "btn-purple" : ""}" onclick="doJuryVote('${a.id}')">
+                    ${isMine ? "✓ Votato" : "Maledici"}
+                  </button>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `);
+      }
+
+      // 3. Scheda bersaglio selezionato sulla mappa
+      if (target) {
+        const dist = me ? manhattan(me, target) : null;
+        const inRange = me && me.hearts > 0 && target.id !== me.id && dist <= me.range;
+        const canAct = inRange && state.game.status === "active";
+
+        let actionsHtml = "";
+        if (canAct) {
+          const ap = state.secret.ap;
+          if (target.hearts > 0) {
+            actionsHtml = `
+              <div class="row" style="margin-top:10px;">
+                <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}','${esc(target.name)}',${target.hearts})" ${ap < 1 ? "disabled" : ""}>
+                  💥 Spara (1 AP)
+                </button>
+                <button class="btn btn-sm btn-success grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>
+                  💝 Dona 1 ❤️
+                </button>
+              </div>
+              <div class="row" style="margin-top:8px;">
+                <input id="giftApAmt" class="input" type="number" min="1" max="${Math.max(1, ap)}" value="1" style="width:76px;padding:6px 8px;" />
+                <button class="btn btn-sm btn-primary grow" onclick="doGiftApFromInput('${target.id}')" ${ap < 1 ? "disabled" : ""}>
+                  🤝 Invia AP segreti
+                </button>
+              </div>
+            `;
+          } else {
+            actionsHtml = `
+              <div class="row" style="margin-top:10px;">
+                <button class="btn btn-sm btn-purple grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>
+                  ✨ Resuscita ${esc(target.name)} (dona 1 ❤️)
+                </button>
+              </div>
+            `;
+          }
+        } else if (me && target.id !== me.id && me.hearts > 0) {
+          actionsHtml = `<p class="muted" style="margin-top:8px;">Fuori portata: distanza Manhattan <strong>${dist}</strong> (il tuo raggio è ${me.range}).</p>`;
+        }
+
+        parts.push(`
+          <div class="action-panel" style="border-color:${esc(target.color)};">
+            <div class="row" style="justify-content:space-between;">
+              <div class="row" style="gap:8px;">
+                <span class="dot" style="background:${esc(target.color)};"></span>
+                <strong>${esc(target.name)}</strong>
+                <span class="muted">(${coordLabel(target.x, target.y)})</span>
+              </div>
+              <button class="btn btn-sm" onclick="state.selectedPlayerId=null;renderBoard();renderContextPanel();">✕</button>
+            </div>
+            <div class="row" style="margin-top:6px;font-size:0.84rem;">
+              <span>${target.hearts > 0 ? "❤️ " + target.hearts : "💀 Eliminato"}</span> ·
+              <span>🔭 Raggio ${target.range}</span> ·
+              <span>☠️ Kill: ${target.kills}</span>
+              ${dist !== null && target.id !== me.id ? `· <span>📏 Distanza: ${dist}</span>` : ""}
+            </div>
+            ${actionsHtml}
+          </div>
+        `);
+      }
+
+      box.innerHTML = parts.join("");
+    }
+
+    function renderPlayersTab() {
+      const box = document.getElementById("tab-players");
+      const me = getMe();
+      const sorted = [...state.players].sort((a, b) => {
+        if ((b.hearts > 0) !== (a.hearts > 0)) return (b.hearts > 0) ? 1 : -1;
+        return b.hearts - a.hearts || b.kills - a.kills;
+      });
+
+      box.innerHTML = sorted.map(p => {
+        const isMe = me && me.id === p.id;
+        const isHaunted = state.game.haunted_player_id === p.id;
+        const dist = me && !isMe ? ` · 📏 d=${manhattan(me, p)}` : "";
+        const apText = isMe ? `🔒 ${state.secret.ap} AP` : "🔒 ???";
+        return `
+          <div class="player-item ${p.hearts <= 0 ? "dead" : ""}" onclick="state.selectedPlayerId='${p.id}';renderBoard();renderContextPanel();">
+            <div class="row" style="gap:9px;">
+              <span class="dot" style="background:${esc(p.color)};"></span>
+              <div>
+                <strong>${esc(p.name)}</strong> ${isMe ? '<span class="muted">(Tu)</span>' : ""} ${isHaunted ? "👻" : ""}
+                <div class="muted" style="font-size:0.78rem;">
+                  ${coordLabel(p.x, p.y)} · 🔭 ${p.range} · ☠️ ${p.kills}${dist}
+                </div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;">${p.hearts > 0 ? "❤️ " + p.hearts : "💀 Morto"}</div>
+              <div class="muted" style="font-size:0.76rem;">${apText}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderLogsTab() {
+      const box = document.getElementById("tab-logs");
+      if (!state.logs.length) {
+        box.innerHTML = '<p class="muted">Nessun evento registrato.</p>';
+        return;
+      }
+      box.innerHTML = `<div class="log-list">` + state.logs.map(l => {
+        const dt = new Date(l.created_at).toLocaleString("it-IT", {
+          day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+        });
+        return `
+          <div class="log-item ${esc(l.event_type)}">
+            <div class="log-time">Giorno ${l.day} · ${dt}</div>
+            <div>${formatLogMessage(l.message)}</div>
+          </div>
+        `;
+      }).join("") + `</div>`;
+    }
+
+    function renderGmTab() {
+      const box = document.getElementById("tab-gm");
+      if (state.secret.role !== "gm") {
+        box.innerHTML = "";
+        return;
+      }
+
+      const gmPlayers = state.secret.players || [];
+      const spectatorUrl = buildLink(gameId);
+      const gmUrl = buildLink(gameId, token);
+
+      box.innerHTML = `
+        <div class="action-panel" style="border-color:var(--warn);">
+          <h3>👑 Comandi Giornalieri GM</h3>
+          <div class="row" style="margin-bottom:8px;">
+            <button class="btn btn-warn grow" onclick="doGmNewDay()" ${state.game.status !== "active" ? "disabled" : ""}>
+              ☀️ Nuovo Giorno (+1 AP & Giuria)
+            </button>
+          </div>
+          <div class="row">
+            <button class="btn btn-success grow" onclick="doGmSpawnHeart()" ${state.game.status !== "active" ? "disabled" : ""}>
+              ❤️ Spawna Cuore Casuale
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="doGmFinishGame()" ${state.game.status !== "active" ? "disabled" : ""}>
+              🏁 Concludi
+            </button>
+          </div>
+        </div>
+
+        <div class="action-panel">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px;">
+            <h3 style="margin:0;">🔑 Link Segreti dei Giocatori</h3>
+            <label class="muted" style="font-size:0.78rem;display:flex;align-items:center;gap:5px;cursor:pointer;">
+              <input type="checkbox" ${state.gmRevealAp ? "checked" : ""} onchange="state.gmRevealAp=this.checked;renderGmTab();" />
+              Mostra AP (spoiler!)
+            </label>
+          </div>
+          <p class="muted" style="margin-bottom:8px;font-size:0.8rem;">
+            Invia a ciascun amico il suo link personale in DM su Discord. Se giochi anche tu, apri il tuo link giocatore in un'altra scheda!
+          </p>
+          ${gmPlayers.map(p => {
+            const pUrl = buildLink(gameId, p.token);
+            return `
+              <div class="link-row">
+                <div class="row" style="gap:7px;">
+                  <span class="dot" style="background:${esc(p.color)};"></span>
+                  <div>
+                    <strong>${esc(p.name)}</strong>
+                    <div class="muted" style="font-size:0.75rem;">
+                      ${p.hearts > 0 ? "❤️ " + p.hearts : "💀 Morto"} · AP: ${state.gmRevealAp ? p.ap : "🔒 nascosti"}
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="copyText('${pUrl}', 'Link di ${esc(p.name)} copiato!')">📋 Copia</button>
+              </div>
+            `;
+          }).join("")}
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn btn-sm grow" onclick="copyText('${spectatorUrl}', 'Link Mappa Pubblica copiato!')">👁️ Copia Link Pubblico</button>
+            <button class="btn btn-sm grow" onclick="copyText('${gmUrl}', 'Link GM copiato (tienilo segreto)!')">👑 Copia Link GM</button>
+          </div>
+        </div>
+
+        <div class="action-panel">
+          <h3>📣 Aggiorna Discord Webhook</h3>
+          <p class="muted" style="margin-bottom:8px;font-size:0.8rem;">
+            Stato attuale: <strong>${state.secret.has_webhook ? "Collegato ✅" : "Non impostato"}</strong>
+          </p>
+          <div class="row">
+            <input id="gmWebhookInput" class="input grow" type="url" placeholder="https://discord.com/api/webhooks/..." />
+            <button class="btn btn-sm btn-primary" onclick="doGmUpdateWebhook()">Salva</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      applyActiveTab();
+    }
+
+    function applyActiveTab() {
+      ["players", "logs", "gm", "rules"].forEach(t => {
+        const panel = document.getElementById("tab-" + t);
+        if (panel) panel.classList.toggle("hidden", t !== state.activeTab);
+      });
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === state.activeTab);
+      });
+    }
+
+    // =========================================================================
+    // AZIONI RPC LATO SERVER
+    // =========================================================================
+    async function runRpc(fnName, params, onSuccessMsg) {
+      if (!sb || state.busy) return null;
+      state.busy = true;
+      try {
+        const { data, error } = await sb.rpc(fnName, params);
+        if (error) {
+          showToast(error.message, "error");
+          return null;
+        }
+        if (onSuccessMsg) {
+          const msg = typeof onSuccessMsg === "function" ? onSuccessMsg(data) : onSuccessMsg;
+          showToast(msg, "success");
+        }
+        await refreshAll();
+        return data;
+      } finally {
+        state.busy = false;
+      }
+    }
+
+    async function doMove(x, y) {
+      await runRpc(
+        "ttt_move",
+        { p_game_id: gameId, p_token: token, p_x: x, p_y: y },
+        (d) => d.picked_heart
+          ? `Spostato in ${coordLabel(x, y)} e raccolto +1 ❤️! (AP rimasti: ${d.ap})`
+          : `Spostato in ${coordLabel(x, y)}! (AP rimasti: ${d.ap})`
+      );
+    }
+
+    async function confirmShoot(targetId, targetName, targetHearts) {
+      if (!confirm(`Sparare a ${targetName} per 1 AP? (Scenderà a ${targetHearts - 1} ❤️)`)) return;
+      await doShoot(targetId);
+    }
+
+    async function doShoot(targetId) {
+      await runRpc(
+        "ttt_shoot",
+        { p_game_id: gameId, p_token: token, p_target_id: targetId },
+        (d) => d.killed
+          ? `💥 Bersaglio distrutto! Hai incassato +${d.looted_ap} AP segreti (Totale: ${d.ap} AP).`
+          : `💥 Colpo andato a segno! (AP rimasti: ${d.ap})`
+      );
+    }
+
+    async function doUpgrade(type) {
+      const label = type === "heart" ? "+1 Cuore" : "+1 Raggio";
+      if (!confirm(`Spendere 3 AP per ottenere ${label}?`)) return;
+      await runRpc(
+        "ttt_upgrade",
+        { p_game_id: gameId, p_token: token, p_type: type },
+        (d) => `Potenziamento ${label} completato! (AP rimasti: ${d.ap})`
+      );
+    }
+
+    async function doGift(targetId, resource, amount) {
+      const label = resource === "heart" ? `${amount} ❤️` : `${amount} AP`;
+      if (!confirm(`Confermi l'invio di ${label}?`)) return;
+      await runRpc(
+        "ttt_gift",
+        { p_game_id: gameId, p_token: token, p_target_id: targetId, p_resource: resource, p_amount: amount },
+        (d) => `Invio di ${label} completato! (AP rimasti: ${d.ap})`
+      );
+    }
+
+    async function doGiftApFromInput(targetId) {
+      const amt = parseInt(document.getElementById("giftApAmt").value, 10);
+      if (!amt || amt < 1) return showToast("Inserisci un numero valido di AP.", "error");
+      await doGift(targetId, "ap", amt);
+    }
+
+    async function doJuryVote(targetId) {
+      await runRpc(
+        "ttt_jury_vote",
+        { p_game_id: gameId, p_token: token, p_target_id: targetId },
+        "👻 Voto della Giuria registrato!"
+      );
+    }
+
+    async function doGmNewDay() {
+      if (!confirm("Avviare un Nuovo Giorno? Tutti i vivi riceveranno +1 AP (tranne il più votato dalla Giuria).")) return;
+      await runRpc(
+        "ttt_gm_new_day",
+        { p_game_id: gameId, p_gm_token: token },
+        (d) => d.haunted_name
+          ? `☀️ Giorno ${d.day} avviato! Maledetto oggi: ${d.haunted_name}.`
+          : `☀️ Giorno ${d.day} avviato! +1 AP assegnato a tutti.`
+      );
+    }
+
+    async function doGmSpawnHeart() {
+      await runRpc(
+        "ttt_gm_spawn_heart",
+        { p_game_id: gameId, p_gm_token: token },
+        (d) => `❤️ Cuore apparso in casella ${d.coord}!`
+      );
+    }
+
+    async function doGmUpdateWebhook() {
+      const url = document.getElementById("gmWebhookInput").value.trim();
+      await runRpc(
+        "ttt_gm_update_settings",
+        { p_game_id: gameId, p_gm_token: token, p_discord_webhook: url, p_finish_game: false },
+        url ? "📣 Discord Webhook salvato!" : "Webhook rimosso."
+      );
+    }
+
+    async function doGmFinishGame() {
+      if (!confirm("Vuoi davvero concludere definitivamente la partita?")) return;
+      await runRpc(
+        "ttt_gm_update_settings",
+        { p_game_id: gameId, p_gm_token: token, p_discord_webhook: null, p_finish_game: true },
+        "🏆 Partita conclusa."
+      );
+    }
+  </script>
+</body>
+</html>
