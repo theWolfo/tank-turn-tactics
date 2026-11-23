@@ -31,16 +31,9 @@
       line-height: 1.45;
     }
 
-    button, input, select {
-      font: inherit;
-      color: inherit;
-    }
+    button, input, select { font: inherit; color: inherit; }
 
-    .container {
-      max-width: 1360px;
-      margin: 0 auto;
-      padding: 16px;
-    }
+    .container { max-width: 1360px; margin: 0 auto; padding: 16px; }
 
     .card {
       background: var(--panel);
@@ -108,8 +101,8 @@
     .badge-dead { background: rgba(168,85,247,0.16); border-color: #a855f7; color: #d8b4fe; }
     .badge-danger { background: rgba(239,68,68,0.16); border-color: #ef4444; color: #fca5a5; }
     .badge-ok { background: rgba(34,197,94,0.16); border-color: #22c55e; color: #86efac; }
+    .badge-clock { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.5); color: #bae6fd; font-variant-numeric: tabular-nums; }
 
-    /* Config Warning */
     .config-banner {
       background: rgba(245,158,11,0.14);
       border: 1px solid var(--warn);
@@ -119,7 +112,6 @@
       margin-bottom: 16px;
     }
 
-    /* Lobby */
     .lobby-grid {
       display: grid;
       grid-template-columns: 1.4fr 1fr;
@@ -148,239 +140,104 @@
       align-items: center;
     }
     .color-input {
-      width: 42px;
-      height: 38px;
-      padding: 2px;
-      background: #0d1523;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
+      width: 42px; height: 38px; padding: 2px;
+      background: #0d1523; border: 1px solid var(--border);
+      border-radius: 8px; cursor: pointer;
     }
 
-    /* Game Header */
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 14px;
     }
     .title-block h1 { font-size: 1.35rem; letter-spacing: 0.3px; }
     .submeta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 
-    /* Main Game Layout */
     .game-layout {
       display: grid;
       grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
       gap: 16px;
       align-items: start;
     }
-    @media (max-width: 980px) {
-      .game-layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 980px) { .game-layout { grid-template-columns: 1fr; } }
 
-    /* Tactical Map */
     .board-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
     }
     .mode-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .mode-btn.active {
-      background: #0284c7;
-      border-color: #38bdf8;
-      color: #fff;
+      background: #0284c7; border-color: #38bdf8; color: #fff;
       box-shadow: 0 0 0 2px rgba(56,189,248,0.28);
     }
 
-    .board-scroll {
-      overflow-x: auto;
-      padding-bottom: 6px;
-    }
+    .board-scroll { overflow-x: auto; padding-bottom: 6px; }
 
     .board-grid {
-      display: grid;
-      gap: 4px;
-      width: max-content;
-      min-width: 100%;
-      user-select: none;
+      display: grid; gap: 4px; width: max-content; min-width: 100%; user-select: none;
     }
 
     .coord-cell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--muted);
-      min-height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: var(--muted); min-height: 22px;
     }
 
     .tile {
-      position: relative;
-      aspect-ratio: 1 / 1;
-      min-width: 44px;
-      background: #0e1726;
-      border: 1px solid #1e2d45;
-      border-radius: 7px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background .12s, border-color .12s, transform .08s;
-      padding: 2px;
+      position: relative; aspect-ratio: 1 / 1; min-width: 44px;
+      background: #0e1726; border: 1px solid #1e2d45; border-radius: 7px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: background .12s, border-color .12s, transform .08s; padding: 2px;
     }
     .tile:hover { border-color: #4b658f; background: #142238; }
-
-    .tile.in-range {
-      background: rgba(56, 189, 248, 0.10);
-      border-color: rgba(56, 189, 248, 0.42);
-    }
-    .tile.can-move {
-      background: rgba(34, 197, 94, 0.18);
-      border-color: #22c55e;
-      box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.25);
-    }
+    .tile.in-range { background: rgba(56, 189, 248, 0.10); border-color: rgba(56, 189, 248, 0.42); }
+    .tile.can-move { background: rgba(34, 197, 94, 0.18); border-color: #22c55e; box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.25); }
     .tile.can-move:hover { background: rgba(34, 197, 94, 0.34); }
-
-    .tile.can-shoot {
-      background: rgba(239, 68, 68, 0.22);
-      border-color: #ef4444;
-      box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.35);
-    }
-    .tile.selected {
-      outline: 2px solid #facc15;
-      outline-offset: -2px;
-      z-index: 2;
-    }
-    .tile.is-me {
-      box-shadow: inset 0 0 0 2px #38bdf8;
-    }
+    .tile.can-shoot { background: rgba(239, 68, 68, 0.22); border-color: #ef4444; box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.35); }
+    .tile.selected { outline: 2px solid #facc15; outline-offset: -2px; z-index: 2; }
+    .tile.is-me { box-shadow: inset 0 0 0 2px #38bdf8; }
 
     .tank-token {
-      width: 72%;
-      height: 54%;
-      min-height: 20px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.76rem;
-      color: #fff;
+      width: 72%; height: 54%; min-height: 20px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.76rem; color: #fff;
       text-shadow: 0 1px 2px rgba(0,0,0,0.75);
-      border: 1px solid rgba(255,255,255,0.28);
-      position: relative;
+      border: 1px solid rgba(255,255,255,0.28); position: relative;
     }
-    .tank-token.dead {
-      opacity: 0.45;
-      filter: grayscale(0.8);
-      border-style: dashed;
-    }
-    .tank-hearts {
-      font-size: 0.66rem;
-      font-weight: 700;
-      margin-top: 2px;
-      color: #fda4af;
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .haunt-pip {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      font-size: 0.7rem;
-      filter: drop-shadow(0 1px 2px #000);
-    }
-    .heart-drop {
-      font-size: 1.25rem;
-      animation: pulse 1.6s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.18); }
-    }
+    .tank-token.dead { opacity: 0.45; filter: grayscale(0.8); border-style: dashed; }
+    .tank-hearts { font-size: 0.66rem; font-weight: 700; margin-top: 2px; color: #fda4af; line-height: 1; white-space: nowrap; }
+    .haunt-pip { position: absolute; top: -5px; right: -5px; font-size: 0.7rem; filter: drop-shadow(0 1px 2px #000); }
+    .heart-drop { font-size: 1.25rem; animation: pulse 1.6s infinite ease-in-out; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
 
-    /* Tabs */
     .tabs {
-      display: flex;
-      gap: 6px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
+      display: flex; gap: 6px; border-bottom: 1px solid var(--border);
+      padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap;
     }
     .tab-btn {
-      padding: 7px 12px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
+      padding: 7px 12px; border-radius: 8px; border: 1px solid transparent;
+      background: transparent; color: var(--muted); font-weight: 700; font-size: 0.85rem; cursor: pointer;
     }
-    .tab-btn.active {
-      background: var(--panel-2);
-      border-color: var(--border);
-      color: var(--text);
-    }
+    .tab-btn.active { background: var(--panel-2); border-color: var(--border); color: var(--text); }
 
-    /* Action Box */
     .action-panel {
-      background: var(--panel-2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 12px;
+      background: var(--panel-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px; margin-bottom: 12px;
     }
     .action-panel h3 { font-size: 0.95rem; margin-bottom: 8px; }
     .muted { color: var(--muted); font-size: 0.85rem; }
 
-    /* Player list */
     .player-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 10px;
-      border-radius: 9px;
-      background: #0f1726;
-      border: 1px solid #1f2e47;
-      margin-bottom: 7px;
-      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: 9px; background: #0f1726;
+      border: 1px solid #1f2e47; margin-bottom: 7px; cursor: pointer;
     }
     .player-item:hover { border-color: #3a537d; }
     .player-item.dead { opacity: 0.6; }
-    .dot {
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,0.4);
-    }
+    .dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.4); }
 
-    /* Logs */
-    .log-list {
-      max-height: 440px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      padding-right: 4px;
-    }
+    .log-list { max-height: 440px; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; padding-right: 4px; }
     .log-item {
-      background: #0e1624;
-      border: 1px solid #1e2d45;
-      border-left: 3px solid var(--accent);
-      border-radius: 7px;
-      padding: 8px 10px;
-      font-size: 0.85rem;
+      background: #0e1624; border: 1px solid #1e2d45; border-left: 3px solid var(--accent);
+      border-radius: 7px; padding: 8px 10px; font-size: 0.85rem;
     }
     .log-item.kill, .log-item.shoot { border-left-color: var(--danger); }
     .log-item.heart, .log-item.revive { border-left-color: #ec4899; }
@@ -388,61 +245,34 @@
     .log-item.gift, .log-item.upgrade { border-left-color: var(--accent-2); }
     .log-time { font-size: 0.72rem; color: var(--muted); margin-bottom: 2px; }
 
-    /* GM Links table */
     .link-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 8px;
-      background: #0e1624;
-      border: 1px solid #1f2e47;
-      border-radius: 8px;
-      margin-bottom: 6px;
-      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 8px; background: #0e1624; border: 1px solid #1f2e47;
+      border-radius: 8px; margin-bottom: 6px; font-size: 0.85rem;
     }
 
-    /* Toast */
     .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      max-width: 380px;
-      background: #102136;
-      border: 1px solid var(--accent);
-      color: var(--text);
-      padding: 12px 16px;
-      border-radius: 10px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-      z-index: 9999;
-      font-size: 0.9rem;
-      font-weight: 600;
-      animation: fadein .18s ease-out;
+      position: fixed; bottom: 20px; right: 20px; max-width: 380px;
+      background: #102136; border: 1px solid var(--accent); color: var(--text);
+      padding: 12px 16px; border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+      z-index: 9999; font-size: 0.9rem; font-weight: 600; animation: fadein .18s ease-out;
     }
     .toast.error { border-color: var(--danger); background: #2b1217; color: #fecaca; }
     .toast.success { border-color: var(--accent-2); background: #0f291c; color: #bbf7d0; }
     @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     .prize-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 0.78rem;
-      color: #fde68a;
-      background: rgba(245,158,11,0.09);
-      border: 1px solid rgba(245,158,11,0.3);
-      padding: 7px 11px;
-      border-radius: 8px;
-      margin-bottom: 12px;
+      display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.78rem; color: #fde68a;
+      background: rgba(245,158,11,0.09); border: 1px solid rgba(245,158,11,0.3);
+      padding: 7px 11px; border-radius: 8px; margin-bottom: 12px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Avviso se mancano le chiavi Supabase -->
     <div id="configBanner" class="config-banner hidden">
       <strong>⚠️ Configurazione Supabase mancante:</strong> apri <code>index.html</code> e inserisci il tuo
-      <code>SUPABASE_URL</code> e la tua <code>SUPABASE_KEY</code> (Publishable / anon key) nelle prime righe dello script.
+      <code>SUPABASE_URL</code> e la tua <code>SUPABASE_KEY</code> nelle prime righe dello script.
     </div>
 
     <!-- ==================== VISTA 1: LOBBY / CREAZIONE GM ==================== -->
@@ -450,7 +280,7 @@
       <div class="topbar">
         <div class="title-block">
           <h1>🛡️ Tank Turn Tactics — Online</h1>
-          <p class="muted">Distanza di Manhattan · AP Segreti lato server · Realtime su Supabase</p>
+          <p class="muted">Distanza di Manhattan · AP Segreti lato server · Orario Giornaliero Automatico</p>
         </div>
       </div>
 
@@ -466,13 +296,9 @@
           <div class="field">
             <label>Dimensioni della mappa (da 4×4 a 20×20)</label>
             <div class="row" style="margin-bottom:8px;">
-              <div class="grow">
-                <input id="cfgWidth" class="input" type="number" min="4" max="20" value="8" />
-              </div>
+              <div class="grow"><input id="cfgWidth" class="input" type="number" min="4" max="20" value="8" /></div>
               <span class="muted">×</span>
-              <div class="grow">
-                <input id="cfgHeight" class="input" type="number" min="4" max="20" value="8" />
-              </div>
+              <div class="grow"><input id="cfgHeight" class="input" type="number" min="4" max="20" value="8" /></div>
             </div>
             <div class="row">
               <button type="button" class="btn btn-sm" onclick="setGridPreset(6,6)">6×6 (Stretta)</button>
@@ -480,6 +306,31 @@
               <button type="button" class="btn btn-sm" onclick="setGridPreset(10,10)">10×10 (Grande)</button>
               <button type="button" class="btn btn-sm" onclick="setGridPreset(12,12)">12×12 (Epica)</button>
             </div>
+          </div>
+
+          <div class="action-panel" style="margin-bottom:14px;">
+            <h3>⏰ Avanzamento Automatico dei Giorni (Ora Italiana)</h3>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:10px;font-size:0.88rem;">
+              <input id="cfgAutoEnabled" type="checkbox" checked />
+              Attiva +1 AP &amp; Giuria automatici a un orario fisso visibile a tutti
+            </label>
+            <div class="row" style="margin-bottom:8px;">
+              <div>
+                <label style="display:block;font-size:0.78rem;color:var(--muted);margin-bottom:3px;">Orario fisso</label>
+                <input id="cfgAutoTime" class="input" type="time" value="09:00" style="width:130px;" />
+              </div>
+              <div class="grow">
+                <label style="display:block;font-size:0.78rem;color:var(--muted);margin-bottom:3px;">Frequenza</label>
+                <select id="cfgAutoWeekdays" class="input">
+                  <option value="true" selected>Solo giorni lavorativi (Lun–Ven)</option>
+                  <option value="false">Tutti i giorni (Lun–Dom)</option>
+                </select>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.84rem;color:var(--muted);">
+              <input id="cfgAutoHeart" type="checkbox" checked />
+              Spawna automaticamente 1 ❤️ al giorno a un orario casuale
+            </label>
           </div>
 
           <div class="field">
@@ -548,7 +399,6 @@
       <div id="prizeBar" class="prize-bar hidden"></div>
 
       <div class="game-layout">
-        <!-- COLONNA SINISTRA: MAPPA -->
         <div class="card">
           <div class="board-toolbar">
             <div id="modeButtons" class="mode-group"></div>
@@ -567,9 +417,7 @@
           <div id="boardHint" class="muted" style="margin-top:10px;"></div>
         </div>
 
-        <!-- COLONNA DESTRA: AZIONI, GM, LISTA, LOG -->
         <div class="card">
-          <!-- Pannello Contestuale Giocatore / Bersaglio -->
           <div id="contextPanel"></div>
 
           <div class="tabs">
@@ -585,16 +433,16 @@
           <div id="tab-rules" class="hidden">
             <div class="muted" style="display:flex;flex-direction:column;gap:8px;font-size:0.84rem;">
               <p><strong>• Inizio:</strong> posizione casuale, 3 ❤️, 0 AP, raggio Manhattan iniziale 2.</p>
-              <p><strong>• Giorno:</strong> ogni giorno lavorativo tutti i sopravvissuti ricevono +1 AP (tranne il giocatore maledetto dalla Giuria dei Morti).</p>
+              <p><strong>• Giorno:</strong> all'orario fisso stabilito dal Game Master tutti i sopravvissuti ricevono +1 AP (tranne il giocatore maledetto dalla Giuria dei Morti).</p>
               <p><strong>• Azioni (in qualsiasi momento):</strong><br/>
                 1. Muovi in una casella ortogonale libera (<strong>1 AP</strong>)<br/>
-                2. Spara a un carro nel tuo raggio Manhattan: toglie 1 ❤️ (<strong>1 AP</strong>)<br/>
+                2. Spara a un carro nel tuo raggio Manhattan: toglie 1 ❤️ (<strong>1 AP</strong> — sparo anonimo nel bollettino)<br/>
                 3. Aggiungi +1 ❤️ (<strong>3 AP</strong>)<br/>
                 4. Potenzia il raggio di +1 (<strong>3 AP</strong>)
               </p>
-              <p><strong>• Eliminazione:</strong> a 0 ❤️ sei morto, resti sulla mappa come relitto bloccante e <strong>tutti i tuoi AP segreti</strong> passano a chi ti ha ucciso.</p>
-              <p><strong>• Scambi & Resurrezione:</strong> puoi regalare ❤️ o AP a chiunque nel tuo raggio. Donare 1 ❤️ a un relitto lo resuscita con 1 ❤️ e 0 AP.</p>
-              <p><strong>• Giuria & Cuori:</strong> i morti votano chi maledire (<em>haunt</em>) il giorno dopo. Una volta al giorno appare un ❤️ sulla mappa per il primo che ci entra.</p>
+              <p><strong>• Eliminazione:</strong> a 0 ❤️ sei morto, resti sulla mappa come relitto bloccante e <strong>tutti i tuoi AP segreti</strong> passano a chi ti ha ucciso (la morte è annunciata con il nome del killer).</p>
+              <p><strong>• Scambi &amp; Resurrezione:</strong> puoi regalare ❤️ o AP a chiunque nel tuo raggio. Donare 1 ❤️ a un relitto lo resuscita con 1 ❤️ e 0 AP.</p>
+              <p><strong>• Giuria &amp; Cuori:</strong> i morti votano chi maledire (<em>haunt</em>) al prossimo giro. Una volta al giorno appare un ❤️ sulla mappa per il primo che ci entra.</p>
             </div>
           </div>
         </div>
@@ -606,10 +454,10 @@
 
   <script>
     // =========================================================================
-    // 1. CONFIGURAZIONE SUPABASE (INSERISCI QUI I TUOI 2 VALORI!)
+    // 1. CONFIGURAZIONE SUPABASE (REINSERISCI QUI I TUOI 2 VALORI!)
     // =========================================================================
-    const SUPABASE_URL = "https://ghfghizzvyscnaubihpx.supabase.co";       // es. https://abcdefgh.supabase.co
-    const SUPABASE_KEY = "sb_publishable_8gANMmEZXThXXQu3ismTvA_hoS75jHg";   // Publishable key (sb_publishable_...) o anon key
+    const SUPABASE_URL = "https://ghfghizzvyscnaubihpx.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_8gANMmEZXThXXQu3ismTvA_hoS75jHg";
 
     // =========================================================================
     // STATO APPLICAZIONE
@@ -629,8 +477,8 @@
       hearts: [],
       logs: [],
       secret: { role: "spectator" },
-      mode: "inspect",          // inspect | move | shoot | gift
-      selectedPlayerId: null,   // bersaglio o carro ispezionato
+      mode: "inspect",
+      selectedPlayerId: null,
       activeTab: "players",
       gmRevealAp: false,
       busy: false
@@ -645,6 +493,8 @@
     ];
     let realtimeChannel = null;
     let refreshTimer = null;
+    let countdownInterval = null;
+    let lastAutoRefreshForTs = null;
 
     // =========================================================================
     // UTILITY
@@ -662,13 +512,8 @@
       return esc(msg).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     }
 
-    function coordLabel(x, y) {
-      return String.fromCharCode(65 + x) + (y + 1);
-    }
-
-    function manhattan(a, b) {
-      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-    }
+    function coordLabel(x, y) { return String.fromCharCode(65 + x) + (y + 1); }
+    function manhattan(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
 
     function initials(name) {
       const parts = String(name || "?").trim().split(/\s+/);
@@ -687,9 +532,7 @@
       window.__toastT = setTimeout(() => { el.remove(); }, 4200);
     }
 
-    function getBaseUrl() {
-      return window.location.origin + window.location.pathname;
-    }
+    function getBaseUrl() { return window.location.origin + window.location.pathname; }
 
     function buildLink(gId, tok = null) {
       const u = new URL(getBaseUrl());
@@ -721,6 +564,42 @@
       return state.players.find(p => p.id === state.secret.player_id) || null;
     }
 
+    function formatCountdownText(game) {
+      if (!game || game.status !== "active") return "";
+      if (!game.auto_day_enabled || !game.next_auto_day_at) {
+        return "⏸️ Avanzamento giorno manuale";
+      }
+      const targetMs = new Date(game.next_auto_day_at).getTime();
+      const diffSec = Math.floor((targetMs - Date.now()) / 1000);
+      const whenLabel = new Date(targetMs).toLocaleString("it-IT", {
+        weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+      });
+      const freq = game.auto_day_weekdays_only ? "Lun–Ven" : "Ogni giorno";
+
+      if (diffSec <= 0) {
+        if (lastAutoRefreshForTs !== game.next_auto_day_at) {
+          lastAutoRefreshForTs = game.next_auto_day_at;
+          setTimeout(() => refreshAll(), 4000);
+        }
+        return `⏰ +1 AP in arrivo... (${whenLabel})`;
+      }
+
+      const d = Math.floor(diffSec / 86400);
+      const h = Math.floor((diffSec % 86400) / 3600);
+      const m = Math.floor((diffSec % 3600) / 60);
+      const s = diffSec % 60;
+      const pad = n => String(n).padStart(2, "0");
+      const rem = d > 0 ? `${d}g ${pad(h)}h ${pad(m)}m` : `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+
+      return `⏰ Prossimo +1 AP: ${whenLabel} (${freq}) · tra ${rem}`;
+    }
+
+    function updateCountdownBadge() {
+      const el = document.getElementById("countdownBadge");
+      if (!el || !state.game) return;
+      el.textContent = formatCountdownText(state.game);
+    }
+
     // =========================================================================
     // INIT
     // =========================================================================
@@ -746,6 +625,7 @@
         if (sb) {
           await refreshAll();
           subscribeRealtime();
+          countdownInterval = setInterval(updateCountdownBadge, 1000);
         }
       } else {
         document.getElementById("lobbyView").classList.remove("hidden");
@@ -764,10 +644,7 @@
 
     function addSetupPlayer() {
       const idx = setupPlayers.length;
-      setupPlayers.push({
-        name: "Giocatore " + (idx + 1),
-        color: DEFAULT_COLORS[idx % DEFAULT_COLORS.length]
-      });
+      setupPlayers.push({ name: "Giocatore " + (idx + 1), color: DEFAULT_COLORS[idx % DEFAULT_COLORS.length] });
       renderSetupPlayers();
     }
 
@@ -781,10 +658,8 @@
       const box = document.getElementById("setupPlayersList");
       box.innerHTML = setupPlayers.map((p, i) => `
         <div class="player-setup-row">
-          <input class="color-input" type="color" value="${esc(p.color)}"
-            onchange="setupPlayers[${i}].color = this.value" />
-          <input class="input" type="text" value="${esc(p.name)}" maxlength="24"
-            oninput="setupPlayers[${i}].name = this.value" placeholder="Nome giocatore" />
+          <input class="color-input" type="color" value="${esc(p.color)}" onchange="setupPlayers[${i}].color = this.value" />
+          <input class="input" type="text" value="${esc(p.name)}" maxlength="24" oninput="setupPlayers[${i}].name = this.value" placeholder="Nome giocatore" />
           <button type="button" class="btn btn-sm" onclick="removeSetupPlayer(${i})" title="Rimuovi">✕</button>
         </div>
       `).join("");
@@ -817,10 +692,7 @@
           const u = new URL(raw);
           const g = u.searchParams.get("game");
           const t = u.searchParams.get("token");
-          if (g) {
-            window.location.href = buildLink(g, t);
-            return;
-          }
+          if (g) { window.location.href = buildLink(g, t); return; }
         }
       } catch {}
       window.location.href = buildLink(raw);
@@ -834,6 +706,10 @@
       const height = parseInt(document.getElementById("cfgHeight").value, 10);
       const webhook = document.getElementById("cfgWebhook").value.trim() || null;
       const prizes = document.getElementById("cfgPrizes").checked;
+      const autoEnabled = document.getElementById("cfgAutoEnabled").checked;
+      const autoTime = document.getElementById("cfgAutoTime").value || "09:00";
+      const autoWeekdays = document.getElementById("cfgAutoWeekdays").value === "true";
+      const autoHeart = document.getElementById("cfgAutoHeart").checked;
 
       const cleaned = setupPlayers
         .map(p => ({ name: p.name.trim(), color: p.color }))
@@ -852,24 +728,19 @@
         p_height: height,
         p_players: cleaned,
         p_discord_webhook: webhook,
-        p_prizes_enabled: prizes
+        p_prizes_enabled: prizes,
+        p_auto_day_enabled: autoEnabled,
+        p_auto_day_time: autoTime,
+        p_auto_day_weekdays_only: autoWeekdays,
+        p_auto_heart_enabled: autoHeart
       });
 
       btn.disabled = false;
       btn.textContent = "🚀 Avvia Partita e Genera i Link Segreti";
 
-      if (error) {
-        showToast(error.message, "error");
-        return;
-      }
+      if (error) { showToast(error.message, "error"); return; }
 
-      saveRecentGame({
-        gameId: data.game_id,
-        token: data.gm_token,
-        name,
-        roleLabel: "👑 Game Master"
-      });
-
+      saveRecentGame({ gameId: data.game_id, token: data.gm_token, name, roleLabel: "👑 Game Master" });
       window.location.href = buildLink(data.game_id, data.gm_token);
     }
 
@@ -900,7 +771,6 @@
       state.logs = logsRes.data || [];
       state.secret = (secretRes && secretRes.data) ? secretRes.data : { role: "spectator" };
 
-      // Salva nei recenti per non perdere il link personale
       if (state.secret.role === "gm") {
         saveRecentGame({ gameId, token, name: state.game.name, roleLabel: "👑 Game Master" });
         if (state.activeTab === "players" && state.game.day === 0 && !window.__gmOpenedOnce) {
@@ -960,6 +830,9 @@
 
       const subMeta = [];
       subMeta.push(`<span class="badge">🗺️ ${g.width}×${g.height} · Manhattan</span>`);
+      if (g.status === "active") {
+        subMeta.push(`<span id="countdownBadge" class="badge badge-clock">${esc(formatCountdownText(g))}</span>`);
+      }
       if (g.first_blood_killer) {
         subMeta.push(`<span class="badge badge-danger">🩸 First Blood: ${esc(g.first_blood_killer)}</span>`);
       }
@@ -1046,7 +919,6 @@
       const me = getMe();
       const showRange = document.getElementById("toggleRange").checked;
 
-      // Riferimento per mostrare il rombo di portata Manhattan
       let rangeOrigin = null;
       if (showRange) {
         if (state.mode === "shoot" || state.mode === "gift") {
@@ -1066,9 +938,7 @@
       grid.style.gridTemplateColumns = `26px repeat(${g.width}, ${colSize})`;
 
       let html = `<div class="coord-cell"></div>`;
-      for (let x = 0; x < g.width; x++) {
-        html += `<div class="coord-cell">${String.fromCharCode(65 + x)}</div>`;
-      }
+      for (let x = 0; x < g.width; x++) html += `<div class="coord-cell">${String.fromCharCode(65 + x)}</div>`;
 
       for (let y = 0; y < g.height; y++) {
         html += `<div class="coord-cell">${y + 1}</div>`;
@@ -1088,12 +958,8 @@
 
           if (me && me.hearts > 0 && g.status === "active") {
             const dMe = Math.abs(x - me.x) + Math.abs(y - me.y);
-            if (state.mode === "move" && dMe === 1 && !p && state.secret.ap >= 1) {
-              classes.push("can-move");
-            }
-            if (state.mode === "shoot" && p && p.id !== me.id && p.hearts > 0 && dMe <= me.range && state.secret.ap >= 1) {
-              classes.push("can-shoot");
-            }
+            if (state.mode === "move" && dMe === 1 && !p && state.secret.ap >= 1) classes.push("can-move");
+            if (state.mode === "shoot" && p && p.id !== me.id && p.hearts > 0 && dMe <= me.range && state.secret.ap >= 1) classes.push("can-shoot");
           }
 
           let inner = "";
@@ -1123,16 +989,11 @@
       const p = state.players.find(pl => pl.x === x && pl.y === y);
       const me = getMe();
 
-      // Movimento rapido
       if (me && me.hearts > 0 && state.game.status === "active" && state.mode === "move") {
         const d = Math.abs(x - me.x) + Math.abs(y - me.y);
-        if (d === 1 && !p) {
-          await doMove(x, y);
-          return;
-        }
+        if (d === 1 && !p) { await doMove(x, y); return; }
       }
 
-      // Sparo rapido
       if (me && me.hearts > 0 && state.game.status === "active" && state.mode === "shoot" && p && p.id !== me.id && p.hearts > 0) {
         if (manhattan(me, p) <= me.range) {
           if (confirm(`Vuoi sparare a ${p.name} per 1 AP? (Scenderà a ${p.hearts - 1} ❤️)`)) {
@@ -1144,16 +1005,9 @@
         }
       }
 
-      // Selezione bersaglio per ispezione / regali
-      if (p) {
-        state.selectedPlayerId = p.id;
-        renderBoard();
-        renderContextPanel();
-      } else {
-        state.selectedPlayerId = null;
-        renderBoard();
-        renderContextPanel();
-      }
+      state.selectedPlayerId = p ? p.id : null;
+      renderBoard();
+      renderContextPanel();
     }
 
     function renderContextPanel() {
@@ -1162,7 +1016,6 @@
       const target = state.players.find(p => p.id === state.selectedPlayerId);
       const parts = [];
 
-      // 1. Se giocatore vivo: potenziamenti rapidi (3 AP)
       if (me && me.hearts > 0 && state.game.status === "active") {
         const ap = state.secret.ap;
         parts.push(`
@@ -1172,18 +1025,13 @@
               <span class="badge badge-ap">🔒 ${ap} AP segreti</span>
             </div>
             <div class="row">
-              <button class="btn btn-sm btn-success grow" onclick="doUpgrade('heart')" ${ap < 3 ? "disabled" : ""}>
-                💖 +1 Cuore (3 AP)
-              </button>
-              <button class="btn btn-sm btn-primary grow" onclick="doUpgrade('range')" ${ap < 3 ? "disabled" : ""}>
-                🔭 +1 Raggio (3 AP)
-              </button>
+              <button class="btn btn-sm btn-success grow" onclick="doUpgrade('heart')" ${ap < 3 ? "disabled" : ""}>💖 +1 Cuore (3 AP)</button>
+              <button class="btn btn-sm btn-primary grow" onclick="doUpgrade('range')" ${ap < 3 ? "disabled" : ""}>🔭 +1 Raggio (3 AP)</button>
             </div>
           </div>
         `);
       }
 
-      // 2. Se giocatore morto: Giuria dei Morti
       if (me && me.hearts === 0 && state.game.status === "active") {
         const alive = state.players.filter(p => p.hearts > 0);
         const tallyMap = new Map((state.secret.jury_tally || []).map(t => [t.target_id, t.votes]));
@@ -1192,9 +1040,7 @@
         parts.push(`
           <div class="action-panel" style="border-color:var(--purple);">
             <h3>👻 Giuria dei Morti</h3>
-            <p class="muted" style="margin-bottom:10px;">
-              Vota chi maledire (<em>haunt</em>): domani chi riceve più voti non riceverà +1 AP.
-            </p>
+            <p class="muted" style="margin-bottom:10px;">Vota chi maledire (<em>haunt</em>): al prossimo giro chi riceve più voti non riceverà +1 AP.</p>
             ${alive.map(a => {
               const votes = tallyMap.get(a.id) || 0;
               const isMine = myVote === a.id;
@@ -1205,9 +1051,7 @@
                     <strong>${esc(a.name)}</strong>
                     <span class="muted">(${votes} ${votes === 1 ? "voto" : "voti"})</span>
                   </div>
-                  <button class="btn btn-sm ${isMine ? "btn-purple" : ""}" onclick="doJuryVote('${a.id}')">
-                    ${isMine ? "✓ Votato" : "Maledici"}
-                  </button>
+                  <button class="btn btn-sm ${isMine ? "btn-purple" : ""}" onclick="doJuryVote('${a.id}')">${isMine ? "✓ Votato" : "Maledici"}</button>
                 </div>
               `;
             }).join("")}
@@ -1215,7 +1059,6 @@
         `);
       }
 
-      // 3. Scheda bersaglio selezionato sulla mappa
       if (target) {
         const dist = me ? manhattan(me, target) : null;
         const inRange = me && me.hearts > 0 && target.id !== me.id && dist <= me.range;
@@ -1227,26 +1070,18 @@
           if (target.hearts > 0) {
             actionsHtml = `
               <div class="row" style="margin-top:10px;">
-                <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}','${esc(target.name)}',${target.hearts})" ${ap < 1 ? "disabled" : ""}>
-                  💥 Spara (1 AP)
-                </button>
-                <button class="btn btn-sm btn-success grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>
-                  💝 Dona 1 ❤️
-                </button>
+                <button class="btn btn-sm btn-danger grow" onclick="confirmShoot('${target.id}','${esc(target.name)}',${target.hearts})" ${ap < 1 ? "disabled" : ""}>💥 Spara (1 AP)</button>
+                <button class="btn btn-sm btn-success grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>💝 Dona 1 ❤️</button>
               </div>
               <div class="row" style="margin-top:8px;">
                 <input id="giftApAmt" class="input" type="number" min="1" max="${Math.max(1, ap)}" value="1" style="width:76px;padding:6px 8px;" />
-                <button class="btn btn-sm btn-primary grow" onclick="doGiftApFromInput('${target.id}')" ${ap < 1 ? "disabled" : ""}>
-                  🤝 Invia AP segreti
-                </button>
+                <button class="btn btn-sm btn-primary grow" onclick="doGiftApFromInput('${target.id}')" ${ap < 1 ? "disabled" : ""}>🤝 Invia AP segreti</button>
               </div>
             `;
           } else {
             actionsHtml = `
               <div class="row" style="margin-top:10px;">
-                <button class="btn btn-sm btn-purple grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>
-                  ✨ Resuscita ${esc(target.name)} (dona 1 ❤️)
-                </button>
+                <button class="btn btn-sm btn-purple grow" onclick="doGift('${target.id}','heart',1)" ${me.hearts <= 1 ? "disabled" : ""}>✨ Resuscita ${esc(target.name)} (dona 1 ❤️)</button>
               </div>
             `;
           }
@@ -1297,9 +1132,7 @@
               <span class="dot" style="background:${esc(p.color)};"></span>
               <div>
                 <strong>${esc(p.name)}</strong> ${isMe ? '<span class="muted">(Tu)</span>' : ""} ${isHaunted ? "👻" : ""}
-                <div class="muted" style="font-size:0.78rem;">
-                  ${coordLabel(p.x, p.y)} · 🔭 ${p.range} · ☠️ ${p.kills}${dist}
-                </div>
+                <div class="muted" style="font-size:0.78rem;">${coordLabel(p.x, p.y)} · 🔭 ${p.range} · ☠️ ${p.kills}${dist}</div>
               </div>
             </div>
             <div style="text-align:right;">
@@ -1332,30 +1165,45 @@
 
     function renderGmTab() {
       const box = document.getElementById("tab-gm");
-      if (state.secret.role !== "gm") {
-        box.innerHTML = "";
-        return;
-      }
+      if (state.secret.role !== "gm") { box.innerHTML = ""; return; }
 
+      const g = state.game;
       const gmPlayers = state.secret.players || [];
       const spectatorUrl = buildLink(gameId);
       const gmUrl = buildLink(gameId, token);
+      const currentTime = String(g.auto_day_time || "09:00").slice(0, 5);
 
       box.innerHTML = `
-        <div class="action-panel" style="border-color:var(--warn);">
-          <h3>👑 Comandi Giornalieri GM</h3>
+        <div class="action-panel" style="border-color:var(--accent);">
+          <h3>⏰ Orario Fisso Giornaliero (Ora Italiana)</h3>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;font-size:0.86rem;">
+            <input id="gmAutoEnabled" type="checkbox" ${g.auto_day_enabled ? "checked" : ""} />
+            Avanzamento automatico attivo (visibile a tutti)
+          </label>
           <div class="row" style="margin-bottom:8px;">
-            <button class="btn btn-warn grow" onclick="doGmNewDay()" ${state.game.status !== "active" ? "disabled" : ""}>
-              ☀️ Nuovo Giorno (+1 AP & Giuria)
-            </button>
+            <input id="gmAutoTime" class="input" type="time" value="${esc(currentTime)}" style="width:120px;" />
+            <select id="gmAutoWeekdays" class="input grow">
+              <option value="true" ${g.auto_day_weekdays_only ? "selected" : ""}>Solo Lun–Ven</option>
+              <option value="false" ${!g.auto_day_weekdays_only ? "selected" : ""}>Tutti i giorni</option>
+            </select>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:10px;font-size:0.83rem;color:var(--muted);">
+            <input id="gmAutoHeart" type="checkbox" ${g.auto_heart_enabled ? "checked" : ""} />
+            Spawna 1 ❤️ automatico al giorno (a orario casuale)
+          </label>
+          <button class="btn btn-sm btn-primary" style="width:100%;" onclick="doGmSaveSchedule()" ${g.status !== "active" ? "disabled" : ""}>
+            💾 Salva Orario &amp; Annuncia sul Bollettino
+          </button>
+        </div>
+
+        <div class="action-panel" style="border-color:var(--warn);">
+          <h3>👑 Comandi Manuali GM</h3>
+          <div class="row" style="margin-bottom:8px;">
+            <button class="btn btn-warn grow" onclick="doGmNewDay()" ${g.status !== "active" ? "disabled" : ""}>☀️ Nuovo Giorno Ora (+1 AP)</button>
           </div>
           <div class="row">
-            <button class="btn btn-success grow" onclick="doGmSpawnHeart()" ${state.game.status !== "active" ? "disabled" : ""}>
-              ❤️ Spawna Cuore Casuale
-            </button>
-            <button class="btn btn-sm btn-danger" onclick="doGmFinishGame()" ${state.game.status !== "active" ? "disabled" : ""}>
-              🏁 Concludi
-            </button>
+            <button class="btn btn-success grow" onclick="doGmSpawnHeart()" ${g.status !== "active" ? "disabled" : ""}>❤️ Spawna Cuore Ora</button>
+            <button class="btn btn-sm btn-danger" onclick="doGmFinishGame()" ${g.status !== "active" ? "disabled" : ""}>🏁 Concludi</button>
           </div>
         </div>
 
@@ -1367,9 +1215,6 @@
               Mostra AP (spoiler!)
             </label>
           </div>
-          <p class="muted" style="margin-bottom:8px;font-size:0.8rem;">
-            Invia a ciascun amico il suo link personale in DM su Discord. Se giochi anche tu, apri il tuo link giocatore in un'altra scheda!
-          </p>
           ${gmPlayers.map(p => {
             const pUrl = buildLink(gameId, p.token);
             return `
@@ -1396,9 +1241,7 @@
 
         <div class="action-panel">
           <h3>📣 Aggiorna Discord Webhook</h3>
-          <p class="muted" style="margin-bottom:8px;font-size:0.8rem;">
-            Stato attuale: <strong>${state.secret.has_webhook ? "Collegato ✅" : "Non impostato"}</strong>
-          </p>
+          <p class="muted" style="margin-bottom:8px;font-size:0.8rem;">Stato attuale: <strong>${state.secret.has_webhook ? "Collegato ✅" : "Non impostato"}</strong></p>
           <div class="row">
             <input id="gmWebhookInput" class="input grow" type="url" placeholder="https://discord.com/api/webhooks/..." />
             <button class="btn btn-sm btn-primary" onclick="doGmUpdateWebhook()">Salva</button>
@@ -1407,10 +1250,7 @@
       `;
     }
 
-    function switchTab(tab) {
-      state.activeTab = tab;
-      applyActiveTab();
-    }
+    function switchTab(tab) { state.activeTab = tab; applyActiveTab(); }
 
     function applyActiveTab() {
       ["players", "logs", "gm", "rules"].forEach(t => {
@@ -1430,10 +1270,7 @@
       state.busy = true;
       try {
         const { data, error } = await sb.rpc(fnName, params);
-        if (error) {
-          showToast(error.message, "error");
-          return null;
-        }
+        if (error) { showToast(error.message, "error"); return null; }
         if (onSuccessMsg) {
           const msg = typeof onSuccessMsg === "function" ? onSuccessMsg(data) : onSuccessMsg;
           showToast(msg, "success");
@@ -1446,9 +1283,7 @@
     }
 
     async function doMove(x, y) {
-      await runRpc(
-        "ttt_move",
-        { p_game_id: gameId, p_token: token, p_x: x, p_y: y },
+      await runRpc("ttt_move", { p_game_id: gameId, p_token: token, p_x: x, p_y: y },
         (d) => d.picked_heart
           ? `Spostato in ${coordLabel(x, y)} e raccolto +1 ❤️! (AP rimasti: ${d.ap})`
           : `Spostato in ${coordLabel(x, y)}! (AP rimasti: ${d.ap})`
@@ -1461,9 +1296,7 @@
     }
 
     async function doShoot(targetId) {
-      await runRpc(
-        "ttt_shoot",
-        { p_game_id: gameId, p_token: token, p_target_id: targetId },
+      await runRpc("ttt_shoot", { p_game_id: gameId, p_token: token, p_target_id: targetId },
         (d) => d.killed
           ? `💥 Bersaglio distrutto! Hai incassato +${d.looted_ap} AP segreti (Totale: ${d.ap} AP).`
           : `💥 Colpo andato a segno! (AP rimasti: ${d.ap})`
@@ -1473,9 +1306,7 @@
     async function doUpgrade(type) {
       const label = type === "heart" ? "+1 Cuore" : "+1 Raggio";
       if (!confirm(`Spendere 3 AP per ottenere ${label}?`)) return;
-      await runRpc(
-        "ttt_upgrade",
-        { p_game_id: gameId, p_token: token, p_type: type },
+      await runRpc("ttt_upgrade", { p_game_id: gameId, p_token: token, p_type: type },
         (d) => `Potenziamento ${label} completato! (AP rimasti: ${d.ap})`
       );
     }
@@ -1483,9 +1314,7 @@
     async function doGift(targetId, resource, amount) {
       const label = resource === "heart" ? `${amount} ❤️` : `${amount} AP`;
       if (!confirm(`Confermi l'invio di ${label}?`)) return;
-      await runRpc(
-        "ttt_gift",
-        { p_game_id: gameId, p_token: token, p_target_id: targetId, p_resource: resource, p_amount: amount },
+      await runRpc("ttt_gift", { p_game_id: gameId, p_token: token, p_target_id: targetId, p_resource: resource, p_amount: amount },
         (d) => `Invio di ${label} completato! (AP rimasti: ${d.ap})`
       );
     }
@@ -1497,48 +1326,45 @@
     }
 
     async function doJuryVote(targetId) {
-      await runRpc(
-        "ttt_jury_vote",
-        { p_game_id: gameId, p_token: token, p_target_id: targetId },
-        "👻 Voto della Giuria registrato!"
-      );
+      await runRpc("ttt_jury_vote", { p_game_id: gameId, p_token: token, p_target_id: targetId }, "👻 Voto della Giuria registrato!");
+    }
+
+    async function doGmSaveSchedule() {
+      const enabled = document.getElementById("gmAutoEnabled").checked;
+      const timeVal = document.getElementById("gmAutoTime").value || "09:00";
+      const weekdaysOnly = document.getElementById("gmAutoWeekdays").value === "true";
+      const autoHeart = document.getElementById("gmAutoHeart").checked;
+      await runRpc("ttt_gm_update_schedule", {
+        p_game_id: gameId,
+        p_gm_token: token,
+        p_auto_day_enabled: enabled,
+        p_auto_day_time: timeVal,
+        p_auto_day_weekdays_only: weekdaysOnly,
+        p_auto_heart_enabled: autoHeart
+      }, enabled ? `⏰ Orario fissato alle ${timeVal}!` : "⏸️ Avanzamento automatico messo in pausa.");
     }
 
     async function doGmNewDay() {
-      if (!confirm("Avviare un Nuovo Giorno? Tutti i vivi riceveranno +1 AP (tranne il più votato dalla Giuria).")) return;
-      await runRpc(
-        "ttt_gm_new_day",
-        { p_game_id: gameId, p_gm_token: token },
-        (d) => d.haunted_name
-          ? `☀️ Giorno ${d.day} avviato! Maledetto oggi: ${d.haunted_name}.`
-          : `☀️ Giorno ${d.day} avviato! +1 AP assegnato a tutti.`
+      if (!confirm("Avviare un Nuovo Giorno adesso? Tutti i vivi riceveranno +1 AP (tranne il più votato dalla Giuria).")) return;
+      await runRpc("ttt_gm_new_day", { p_game_id: gameId, p_gm_token: token },
+        (d) => d.haunted_name ? `☀️ Giorno ${d.day} avviato! Maledetto oggi: ${d.haunted_name}.` : `☀️ Giorno ${d.day} avviato! +1 AP assegnato a tutti.`
       );
     }
 
     async function doGmSpawnHeart() {
-      await runRpc(
-        "ttt_gm_spawn_heart",
-        { p_game_id: gameId, p_gm_token: token },
-        (d) => `❤️ Cuore apparso in casella ${d.coord}!`
-      );
+      await runRpc("ttt_gm_spawn_heart", { p_game_id: gameId, p_gm_token: token }, (d) => `❤️ Cuore apparso in casella ${d.coord}!`);
     }
 
     async function doGmUpdateWebhook() {
       const url = document.getElementById("gmWebhookInput").value.trim();
-      await runRpc(
-        "ttt_gm_update_settings",
-        { p_game_id: gameId, p_gm_token: token, p_discord_webhook: url, p_finish_game: false },
+      await runRpc("ttt_gm_update_settings", { p_game_id: gameId, p_gm_token: token, p_discord_webhook: url, p_finish_game: false },
         url ? "📣 Discord Webhook salvato!" : "Webhook rimosso."
       );
     }
 
     async function doGmFinishGame() {
       if (!confirm("Vuoi davvero concludere definitivamente la partita?")) return;
-      await runRpc(
-        "ttt_gm_update_settings",
-        { p_game_id: gameId, p_gm_token: token, p_discord_webhook: null, p_finish_game: true },
-        "🏆 Partita conclusa."
-      );
+      await runRpc("ttt_gm_update_settings", { p_game_id: gameId, p_gm_token: token, p_discord_webhook: null, p_finish_game: true }, "🏆 Partita conclusa.");
     }
   </script>
 </body>
